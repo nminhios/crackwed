@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SiteRipper Pro — nminhios</title>
+<style>
+:root {
+  --bg:#07070f;--surf:#0f0f1a;--surf2:#161625;--bord:#1f1f35;
+  --acc:#7c3aed;--acc2:#a855f7;--acc3:#06b6d4;
+  --txt:#e2e8f0;--mut:#64748b;
+  --grn:#10b981;--red:#ef4444;--yel:#f59e0b;--blu:#3b82f6;
+  --code:#080812;
+  padding-top:env(safe-area-inset-top,0);
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+@media(prefers-color-scheme:light){
+  :root{--bg:#f1f5f9;--surf:#fff;--surf2:#f8fafc;--bord:#e2e8f0;--txt:#0f172a;--mut:#94a3b8;--code:#f1f5f9}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,sans-serif;font-size:15px}
+/* HEADER */
+.hdr{background:var(--surf);border-bottom:1px solid var(--bord);padding:14px 28px;display:flex;align-items:center;gap:14px;position:sticky;top:env(safe-area-inset-top,0);z-index:10}
+.hdr-logo{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,var(--acc),var(--acc2),var(--acc3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hdr-tag{font-size:.68rem;font-weight:800;background:var(--acc);color:#fff;padding:3px 9px;border-radius:99px;letter-spacing:.06em}
+.hdr-user{margin-left:auto;font-size:.8rem;color:var(--mut)}
+.hdr-user span{color:var(--acc2);font-weight:700}
+/* LAYOUT */
+.wrap{max-width:980px;margin:0 auto;padding:32px 20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+/* CARD */
+.card{background:var(--surf);border:1px solid var(--bord);border-radius:14px;padding:22px;margin-bottom:0}
+.card-title{font-size:.82rem;font-weight:800;color:var(--acc2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.card-title .dot{width:7px;height:7px;border-radius:50%;background:var(--acc2);display:inline-block}
+/* FORM */
+label{font-size:.78rem;color:var(--mut);display:block;margin-bottom:5px;margin-top:12px}
+label:first-child{margin-top:0}
+input,select,textarea{width:100%;background:var(--code);border:1px solid var(--bord);border-radius:8px;color:var(--txt);padding:9px 13px;font-size:.88rem;outline:none;transition:border .18s;font-family:inherit}
+input:focus,select:focus,textarea:focus{border-color:var(--acc)}
+/* TOGGLES */
+.tgl-group{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+.tgl{display:flex;align-items:center;gap:5px;background:var(--code);border:1px solid var(--bord);border-radius:7px;padding:6px 11px;cursor:pointer;font-size:.78rem;user-select:none;transition:all .15s}
+.tgl input{accent-color:var(--acc);width:13px;height:13px}
+.tgl:has(input:checked){border-color:var(--acc);background:rgba(124,58,237,.1);color:var(--acc2)}
+/* BTNS */
+.btn{display:inline-flex;align-items:center;gap:7px;border:none;border-radius:8px;padding:10px 22px;font-size:.88rem;font-weight:700;cursor:pointer;transition:opacity .18s}
+.btn-pri{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff}
+.btn-pri:hover{opacity:.85}
+.btn-sec{background:var(--surf2);color:var(--txt);border:1px solid var(--bord)}
+.btn-sec:hover{opacity:.8}
+.btn-grn{background:var(--grn);color:#fff}
+.btn-grn:hover{opacity:.85}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+/* PROXY TABS */
+.p-tabs{display:flex;gap:0;border:1px solid var(--bord);border-radius:9px;overflow:hidden;margin-bottom:10px}
+.p-tab{flex:1;padding:7px 4px;text-align:center;font-size:.75rem;font-weight:700;cursor:pointer;background:var(--code);color:var(--mut);border:none;transition:all .15s}
+.p-tab.active{background:var(--acc);color:#fff}
+/* PROGRESS */
+.prog-wrap{background:var(--bord);border-radius:99px;height:5px;margin:10px 0;overflow:hidden}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2),var(--acc3));border-radius:99px;width:0%;transition:width .25s}
+.stats{display:flex;gap:16px;flex-wrap:wrap;margin-top:6px}
+.stat{font-size:.75rem;color:var(--mut)}.stat b{color:var(--txt)}
+/* LOG */
+#log{background:var(--code);border:1px solid var(--bord);border-radius:8px;padding:13px;font-family:'Consolas','Fira Code',monospace;font-size:.75rem;line-height:1.75;height:220px;overflow-y:auto;color:var(--mut);margin-top:14px}
+.lok{color:var(--grn)}.lerr{color:var(--red)}.linf{color:var(--acc3)}.lwrn{color:var(--yel)}
+/* ASSET LIST */
+.a-list{border:1px solid var(--bord);border-radius:9px;overflow:hidden;max-height:260px;overflow-y:auto;margin-top:10px}
+.a-row{display:flex;align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid var(--bord);font-size:.75rem}
+.a-row:last-child{border-bottom:none}
+.a-badge{font-size:.65rem;font-weight:800;padding:2px 6px;border-radius:99px;flex-shrink:0}
+.bh{background:#1e3a5f;color:#60a5fa}.bc{background:#1a2e1a;color:#4ade80}
+.bj{background:#3a2e0a;color:#fbbf24}.bi{background:#2e1a2e;color:#e879f9}
+.bf{background:#1e2e3a;color:#67e8f9}.bo{background:#222;color:#94a3b8}
+.a-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mut)}
+.a-sz{flex-shrink:0;color:var(--mut)}
+.a-dl{background:var(--acc);color:#fff;border:none;border-radius:5px;padding:2px 8px;font-size:.68rem;font-weight:700;cursor:pointer;flex-shrink:0}
+.empty{text-align:center;color:var(--mut);padding:28px;font-size:.82rem}
+/* SCRIPT */
+#scriptOut{height:180px;font-family:monospace;font-size:.72rem;color:#4ade80;background:var(--code);resize:vertical}
+/* METHOD CARD */
+.method-explain{background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.25);border-radius:9px;padding:12px 15px;font-size:.78rem;line-height:1.7;color:var(--mut);margin-top:12px}
+.method-explain b{color:var(--acc2)}
+.method-explain code{background:var(--code);border:1px solid var(--bord);border-radius:4px;padding:1px 5px;font-family:monospace;color:var(--acc3)}
+/* BADGE MODE */
+.mode-badge{display:inline-block;font-size:.68rem;font-weight:800;padding:2px 8px;border-radius:99px;margin-left:6px}
+.mode-a{background:rgba(16,185,129,.15);color:var(--grn);border:1px solid rgba(16,185,129,.3)}
+.mode-b{background:rgba(59,130,246,.15);color:var(--blu);border:1px solid rgba(59,130,246,.3)}
+.mode-c{background:rgba(245,158,11,.15);color:var(--yel);border:1px solid rgba(245,158,11,.3)}
+/* SPEED BAR */
+.speed-row{display:flex;gap:8px;margin-top:8px}
+.speed-btn{flex:1;padding:6px 4px;text-align:center;font-size:.72rem;font-weight:700;border:1px solid var(--bord);border-radius:7px;cursor:pointer;background:var(--code);color:var(--mut);transition:all .15s}
+.speed-btn.active{background:var(--acc);color:#fff;border-color:var(--acc)}
+/* DEEP SCAN */
+.deep-opts{display:none;margin-top:10px;padding:12px;background:var(--surf2);border-radius:9px;border:1px solid var(--bord)}
+/* SECTION */
+.section-gap{margin-bottom:18px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <span class="hdr-logo">SiteRipper Pro</span>
+  <span class="hdr-tag">v3.0</span>
+  <span class="hdr-user">Xin chào, <span>nminhios</span> 👋</span>
+</div>
+
+<div class="wrap">
+
+  <!-- ROW 1: Config + Mode -->
+  <div class="grid section-gap">
+
+    <!-- Cấu hình mục tiêu -->
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>🎯 Website Mục Tiêu</div>
+
+      <label>Địa chỉ website (URL)</label>
+      <input type="url" id="url" placeholder="https://website-doi-thu.com" />
+
+      <label>Tên thư mục lưu (tùy chọn)</label>
+      <input type="text" id="folderName" placeholder="doi_thu_website" />
+
+      <label>Loại file cần tải</label>
+      <div class="tgl-group">
+        <label class="tgl"><input type="checkbox" id="gHtml" checked> 📄 HTML</label>
+        <label class="tgl"><input type="checkbox" id="gCss" checked> 🎨 CSS</label>
+        <label class="tgl"><input type="checkbox" id="gJs" checked> ⚡ JavaScript</label>
+        <label class="tgl"><input type="checkbox" id="gImg"> 🖼 Hình ảnh</label>
+        <label class="tgl"><input type="checkbox" id="gFont"> 🔤 Font chữ</label>
+        <label class="tgl"><input type="checkbox" id="gJson"> 📦 JSON/API</label>
+        <label class="tgl"><input type="checkbox" id="gSub"> 🔗 Trang con (1 cấp)</label>
+        <label class="tgl"><input type="checkbox" id="gDeep"> 🕸 Quét sâu (2-3 cấp)</label>
+      </div>
+
+      <label>Tốc độ tải</label>
+      <div class="speed-row">
+        <button class="speed-btn" onclick="setSpeed(50,'Chậm')">🐢 Chậm</button>
+        <button class="speed-btn active" onclick="setSpeed(150,'Vừa')">🚶 Vừa</button>
+        <button class="speed-btn" onclick="setSpeed(300,'Nhanh')">🐇 Nhanh</button>
+        <button class="speed-btn" onclick="setSpeed(500,'Tối đa')">🚀 Tối đa</button>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-pri" id="startBtn" onclick="batDau()">▶ Bắt Đầu Tải</button>
+        <button class="btn btn-grn" id="zipBtn" style="display:none" onclick="taiZip()">📦 Tải ZIP</button>
+        <button class="btn btn-sec" onclick="xoaTat()">🗑 Xóa</button>
+      </div>
+    </div>
+
+    <!-- Phương pháp -->
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>⚙️ Phương Pháp Tải</div>
+
+      <div class="p-tabs">
+        <button class="p-tab active" onclick="chonMode('A',this)">A — Proxy Tự Động</button>
+        <button class="p-tab" onclick="chonMode('B',this)">B — Lệnh Terminal</button>
+        <button class="p-tab" onclick="chonMode('C',this)">C — Dán HTML Thủ Công</button>
+      </div>
+
+      <!-- Mode A -->
+      <div id="modeA">
+        <label>Proxy Server (bypass chặn CORS)</label>
+        <select id="proxySelect" onchange="doiProxy()">
+          <option value="https://api.allorigins.win/raw?url=">AllOrigins (ổn định nhất)</option>
+          <option value="https://corsproxy.io/?">CorsProxy.io</option>
+          <option value="https://cors-anywhere.herokuapp.com/">CORS Anywhere</option>
+          <option value="custom">Tự nhập proxy...</option>
+        </select>
+        <div id="customProxy" style="display:none;margin-top:6px">
+          <input type="text" id="customProxyUrl" placeholder="https://proxy-cua-ban.com/?url=" />
+        </div>
+
+        <label style="margin-top:12px">Kỹ thuật chống phát hiện</label>
+        <div class="tgl-group">
+          <label class="tgl"><input type="checkbox" id="fakeUA" checked> 🥸 Giả User-Agent</label>
+          <label class="tgl"><input type="checkbox" id="delay" checked> ⏱ Random Delay</label>
+          <label class="tgl"><input type="checkbox" id="retry"> 🔄 Tự thử lại (3x)</label>
+          <label class="tgl"><input type="checkbox" id="cssInline"> 📎 Nhúng CSS vào HTML</label>
+          <label class="tgl"><input type="checkbox" id="jsInline"> 📎 Nhúng JS vào HTML</label>
+        </div>
+
+        <div class="method-explain">
+          <b>Cách hoạt động:</b> Tool dùng proxy server làm trung gian để vượt qua chặn CORS của browser. HTML được tải về → phân tích tìm toàn bộ link CSS/JS/ảnh → tải từng file → đóng gói ZIP.
+        </div>
+      </div>
+
+      <!-- Mode B -->
+      <div id="modeB" style="display:none">
+        <div class="method-explain">
+          <b>Cách dùng:</b><br>
+          1. Nhập URL bên trái → bấm <b>"Tạo Lệnh"</b><br>
+          2. Copy lệnh → mở Terminal (cmd/PowerShell/bash)<br>
+          3. Dán và chạy → file tải về thư mục <code>ripped/</code><br><br>
+          <b>Mạnh nhất</b> — không bị giới hạn, tải được mọi loại website kể cả có bảo vệ. Cần cài <code>wget</code> hoặc <code>httrack</code>.
+        </div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn btn-sec" onclick="taoLenh()">📋 Tạo Lệnh Terminal</button>
+        </div>
+        <div id="scriptCard" style="display:none;margin-top:12px">
+          <textarea id="scriptOut" readonly></textarea>
+          <div class="btn-row">
+            <button class="btn btn-sec" onclick="copyLenh()">📋 Copy Lệnh</button>
+            <button class="btn btn-pri" onclick="taiScript()">⬇ Tải file .sh</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mode C -->
+      <div id="modeC" style="display:none">
+        <div class="method-explain">
+          <b>Cách dùng thủ công:</b><br>
+          1. Mở website đối thủ → nhấn <code>Ctrl+U</code> (xem source)<br>
+          2. Nhấn <code>Ctrl+A</code> rồi <code>Ctrl+C</code> (copy tất cả)<br>
+          3. Dán vào ô bên dưới → bấm <b>"Phân Tích"</b><br>
+          Tool sẽ tìm toàn bộ link CSS/JS/ảnh từ HTML đó.
+        </div>
+        <label style="margin-top:10px">Dán source HTML vào đây</label>
+        <textarea id="manualHtml" style="height:120px;font-family:monospace;font-size:.72rem;resize:vertical" placeholder="<!DOCTYPE html>..."></textarea>
+        <div class="btn-row">
+          <button class="btn btn-pri" onclick="phanTichThuCong()">🔍 Phân Tích HTML</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: Progress + Assets -->
+  <div class="grid section-gap">
+
+    <!-- Tiến độ -->
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>📡 Tiến Độ Tải</div>
+      <div class="prog-wrap"><div class="prog-bar" id="progBar"></div></div>
+      <div class="stats">
+        <div class="stat">Đã tải: <b id="sFetch">0</b></div>
+        <div class="stat">Tổng file: <b id="sAsset">0</b></div>
+        <div class="stat">Lỗi: <b id="sErr">0</b></div>
+        <div class="stat">Dung lượng: <b id="sSize">0 KB</b></div>
+        <div class="stat">Trạng thái: <b id="sStatus">Chờ...</b></div>
+      </div>
+      <div id="log"><div class="empty">Nhập URL và bấm Bắt Đầu Tải...</div></div>
+    </div>
+
+    <!-- Danh sách file -->
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>📦 File Đã Tải (<span id="assetCount">0</span>)</div>
+
+      <input type="text" id="filterBox" placeholder="🔍 Lọc tên file..." oninput="locFile(this.value)" style="margin-bottom:10px" />
+
+      <div id="assetWrap"><div class="empty">Chưa có file nào...</div></div>
+
+      <div class="btn-row" style="margin-top:12px">
+        <button class="btn btn-grn" id="zipBtn2" style="display:none" onclick="taiZip()">📦 Tải Tất Cả (ZIP)</button>
+        <button class="btn btn-sec" onclick="taiHtmlHoanChinh()">💾 Tải HTML Hoàn Chỉnh</button>
+        <button class="btn btn-sec" onclick="xoaDanhSach()">🗑 Xóa Danh Sách</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3: Hướng dẫn bypass -->
+  <div class="card section-gap">
+    <div class="card-title"><span class="dot"></span>🔓 Hướng Dẫn Vượt Bảo Vệ Nâng Cao</div>
+    <div class="grid">
+      <div>
+        <label style="margin-top:0;color:var(--yel);font-weight:700">⚠️ Website dùng Cloudflare / Anti-bot?</label>
+        <div class="method-explain" style="margin-top:6px">
+          Dùng lệnh này trong terminal (cần Python + cloudscraper):<br><br>
+          <code>pip install cloudscraper</code><br>
+          <code>python3 bypass_cf.py https://target.com</code><br><br>
+          Hoặc dùng <b>Puppeteer</b> (Node.js) để render JavaScript trước khi tải.
+        </div>
+      </div>
+      <div>
+        <label style="margin-top:0;color:var(--grn);font-weight:700">✅ Lệnh HTTrack (mạnh nhất)</label>
+        <div class="method-explain" style="margin-top:6px">
+          <code>httrack "https://target.com" -O "./ripped" "+*.target.com/*" --mirror</code><br><br>
+          HTTrack tải toàn bộ website bao gồm: HTML, CSS, JS, ảnh, font, video — kể cả trang có AJAX và lazy load.
+        </div>
+      </div>
+      <div>
+        <label style="margin-top:0;color:var(--acc2);font-weight:700">🐍 Script Python bypass hoàn chỉnh</label>
+        <div class="method-explain" style="margin-top:6px">
+          <code>pip install requests beautifulsoup4 cloudscraper</code><br><br>
+          Bấm nút bên dưới để tải script Python đầy đủ — tự động bypass Cloudflare, tải toàn bộ asset, lưu offline.
+        </div>
+        <button class="btn btn-pri" style="margin-top:8px" onclick="taiPython()">🐍 Tải Script Python</button>
+      </div>
+      <div>
+        <label style="margin-top:0;color:var(--acc3);font-weight:700">🖥 DevTools Tips</label>
+        <div class="method-explain" style="margin-top:6px">
+          Mở <b>F12</b> → tab <b>Network</b> → reload trang → lọc theo loại (JS/CSS/Fetch) → click chuột phải file → <b>"Save as"</b> hoặc <b>"Copy URL"</b> để lấy từng file riêng lẻ.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- wrap -->
+
+<script>
+// ─── STATE ───
+let captured = [];
+let stats = {fetch:0,asset:0,err:0,size:0};
+let running = false;
+let currentMode = 'A';
+let delayMs = 150;
+const PROXIES = [
+  'https://api.allorigins.win/raw?url=',
+  'https://corsproxy.io/?',
+  'https://cors-anywhere.herokuapp.com/'
+];
+let proxyIdx = 0;
+
+// ─── HELPERS ───
+function lg(msg,cls=''){
+  const el=document.getElementById('log');
+  if(el.querySelector('.empty'))el.innerHTML='';
+  const d=document.createElement('div');
+  d.className=cls;
+  d.textContent=`[${ts()}] ${msg}`;
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+}
+function ts(){const n=new Date();return`${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;}
+function pad(n){return String(n).padStart(2,'0');}
+function prog(p){document.getElementById('progBar').style.width=p+'%';}
+function fmtSz(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(2)+'MB';}
+function updStats(){
+  document.getElementById('sFetch').textContent=stats.fetch;
+  document.getElementById('sAsset').textContent=stats.asset;
+  document.getElementById('sErr').textContent=stats.err;
+  document.getElementById('sSize').textContent=fmtSz(stats.size);
+}
+function setStatus(t){document.getElementById('sStatus').textContent=t;}
+function setSpeed(ms,label){delayMs=ms;document.querySelectorAll('.speed-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');}
+
+// ─── RENDER ASSETS ───
+function renderAssets(filter=''){
+  const el=document.getElementById('assetWrap');
+  document.getElementById('assetCount').textContent=captured.length;
+  const list=filter?captured.filter(a=>a.filename.toLowerCase().includes(filter.toLowerCase())):captured;
+  if(!list.length){el.innerHTML='<div class="empty">Chưa có file nào...</div>';return;}
+  el.innerHTML=`<div class="a-list">${list.map((a,i)=>`
+    <div class="a-row">
+      <span class="a-badge ${badgeCls(a.type)}">${a.type.toUpperCase()}</span>
+      <span class="a-name" title="${a.url}">${a.filename}</span>
+      <span class="a-sz">${a.size?fmtSz(a.size):'-'}</span>
+      ${a.blob?`<button class="a-dl" onclick="taiMot(${captured.indexOf(a)})">⬇</button>`:''}
+    </div>`).join('')}</div>`;
+  if(captured.length){
+    document.getElementById('zipBtn').style.display='inline-flex';
+    document.getElementById('zipBtn2').style.display='inline-flex';
+  }
+}
+function badgeCls(t){return{html:'bh',css:'bc',js:'bj',img:'bi',font:'bf'}[t]||'bo';}
+function locFile(v){renderAssets(v);}
+function taiMot(i){
+  const a=captured[i];
+  if(!a.blob)return;
+  const u=URL.createObjectURL(a.blob);
+  const link=document.createElement('a');link.href=u;link.download=a.filename;link.click();
+  setTimeout(()=>URL.revokeObjectURL(u),1000);
+}
+
+// ─── URL UTILS ───
+function resolve(base,rel){try{return new URL(rel,base).href;}catch{return null;}}
+function fname(url,type){
+  try{
+    const u=new URL(url);
+    let p=u.pathname.replace(/^\/+/,'').replace(/[/\\?&=:#]/g,'_')||'index';
+    const ext={html:'.html',css:'.css',js:'.js',img:'.png',font:'.woff2',json:'.json'}[type]||'.bin';
+    if(!p.match(/\.\w{1,5}$/))p+=ext;
+    return p.substring(0,90);
+  }catch{return 'file_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);}
+}
+function gType(url,ct=''){
+  const u=url.toLowerCase().split('?')[0];
+  if(ct.includes('text/html')||u.endsWith('.html')||u.endsWith('.htm'))return'html';
+  if(ct.includes('text/css')||u.endsWith('.css'))return'css';
+  if(ct.includes('javascript')||u.endsWith('.js')||u.endsWith('.mjs')||u.endsWith('.cjs'))return'js';
+  if(ct.includes('image/')||/\.(png|jpg|jpeg|gif|svg|webp|ico|avif)$/.test(u))return'img';
+  if(/\.(woff2?|ttf|otf|eot)$/.test(u))return'font';
+  if(ct.includes('json')||u.endsWith('.json'))return'json';
+  return'other';
+}
+
+// ─── PARSE HTML ───
+function parseHtml(html,base,opts){
+  const parser=new DOMParser();
+  const doc=parser.parseFromString(html,'text/html');
+  const found=[];const seen=new Set();
+  function add(url,type){if(!url||seen.has(url))return;seen.add(url);found.push({url,type});}
+  if(opts.css){
+    doc.querySelectorAll('link[rel="stylesheet"]').forEach(el=>add(resolve(base,el.getAttribute('href')),'css'));
+    // CSS trong style tag — extract url()
+    doc.querySelectorAll('style').forEach(el=>{
+      for(const m of el.textContent.matchAll(/url\(['"]?([^'")\s]+)['"]?\)/g))add(resolve(base,m[1]),'css');
+    });
+  }
+  if(opts.js) doc.querySelectorAll('script[src]').forEach(el=>add(resolve(base,el.getAttribute('src')),'js'));
+  if(opts.img){
+    doc.querySelectorAll('img').forEach(el=>{
+      add(resolve(base,el.getAttribute('src')),'img');
+      add(resolve(base,el.getAttribute('data-src')),'img');
+      add(resolve(base,el.getAttribute('data-lazy-src')),'img');
+    });
+    doc.querySelectorAll('[style]').forEach(el=>{
+      for(const m of el.getAttribute('style').matchAll(/url\(['"]?([^'")\s]+)['"]?\)/g))add(resolve(base,m[1]),'img');
+    });
+    // srcset
+    doc.querySelectorAll('[srcset]').forEach(el=>{
+      el.getAttribute('srcset').split(',').forEach(s=>{
+        const u=s.trim().split(/\s+/)[0];
+        add(resolve(base,u),'img');
+      });
+    });
+  }
+  if(opts.font){
+    doc.querySelectorAll('link[rel="preload"][as="font"],link[href*=".woff"],link[href*=".ttf"]').forEach(el=>add(resolve(base,el.getAttribute('href')),'font'));
+    // Google Fonts
+    doc.querySelectorAll('link[href*="fonts.googleapis.com"]').forEach(el=>add(el.getAttribute('href'),'css'));
+  }
+  if(opts.json) doc.querySelectorAll('script[type="application/json"],script[type="application/ld+json"]').forEach(el=>{/* inline */});
+  if(opts.sub||opts.deep){
+    const origin=new URL(base).origin;
+    doc.querySelectorAll('a[href]').forEach(el=>{
+      const h=resolve(base,el.getAttribute('href'));
+      if(h&&h.startsWith(origin)&&!h.includes('#'))add(h,'html');
+    });
+  }
+  return found;
+}
+
+// ─── PROXY FETCH ───
+async function pfetch(url){
+  const proxySel=document.getElementById('proxySelect').value;
+  let proxy;
+  if(proxySel==='custom') proxy=document.getElementById('customProxyUrl').value;
+  else proxy=proxySel;
+  // Random delay chống phát hiện
+  if(document.getElementById('delay').checked){
+    await sleep(delayMs + Math.random()*100);
+  }
+  const retryOn=document.getElementById('retry').checked;
+  const maxTry=retryOn?3:1;
+  let lastErr;
+  for(let t=0;t<maxTry;t++){
+    try{
+      const fakeUAHeaders={};
+      // Lưu ý: browser không cho set User-Agent qua fetch, nhưng proxy server tốt sẽ forward
+      const resp=await fetch(proxy+encodeURIComponent(url),{signal:AbortSignal.timeout(15000)});
+      if(!resp.ok)throw new Error(`HTTP ${resp.status}`);
+      const ct=resp.headers.get('content-type')||'';
+      const blob=await resp.blob();
+      return{blob,ct};
+    }catch(e){lastErr=e;if(t<maxTry-1){await sleep(800*(t+1));lg(`Thử lại lần ${t+2}...`,'lwrn');}}
+  }
+  throw lastErr;
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// ─── BẮT ĐẦU TẢI (MODE A) ───
+async function batDau(){
+  const url=document.getElementById('url').value.trim();
+  if(currentMode==='B'){taoLenh();return;}
+  if(currentMode==='C'){document.getElementById('modeC').scrollIntoView({behavior:'smooth'});return;}
+  if(!url){alert('Nhập URL website trước nha nminhios!');return;}
+  if(running)return;
+  const opts={
+    html:document.getElementById('gHtml').checked,
+    css:document.getElementById('gCss').checked,
+    js:document.getElementById('gJs').checked,
+    img:document.getElementById('gImg').checked,
+    font:document.getElementById('gFont').checked,
+    json:document.getElementById('gJson').checked,
+    sub:document.getElementById('gSub').checked,
+    deep:document.getElementById('gDeep').checked,
+  };
+  // Reset
+  captured=[];stats={fetch:0,asset:0,err:0,size:0};
+  updStats();prog(0);renderAssets();
+  document.getElementById('zipBtn').style.display='none';
+  document.getElementById('zipBtn2').style.display='none';
+  document.getElementById('log').innerHTML='';
+  running=true;
+  document.getElementById('startBtn').disabled=true;
+  setStatus('Đang tải...');
+
+  try{
+    lg(`🎯 Mục tiêu: ${url}`,'linf');
+    lg('📥 Đang tải HTML chính...','linf');
+    prog(5);
+    const{blob:htmlBlob,ct}=await pfetch(url);
+    const htmlText=await htmlBlob.text();
+    stats.fetch++;stats.asset++;stats.size+=htmlBlob.size;
+    captured.push({url,type:'html',blob:htmlBlob,filename:'index.html',size:htmlBlob.size});
+    lg(`✓ index.html (${fmtSz(htmlBlob.size)})`,'lok');
+    updStats();renderAssets();prog(12);
+
+    // Parse
+    const links=parseHtml(htmlText,url,opts);
+    lg(`🔍 Tìm thấy ${links.length} file liên kết`,'linf');
+
+    // Nếu có CSS inline / JS inline option
+    let inlineHtml=htmlText;
+
+    const total=links.length;
+    let done=0;
+    const subpages=[];
+
+    for(const{url:aUrl,type:aType} of links){
+      if(!aUrl){done++;continue;}
+      try{
+        const{blob,ct:act}=await pfetch(aUrl);
+        const t=aType!=='other'?aType:gType(aUrl,act);
+        const fn=fname(aUrl,t);
+        if(aType==='html'&&(opts.sub||opts.deep)){subpages.push({url:aUrl,blob});}
+        captured.push({url:aUrl,type:t,blob,filename:fn,size:blob.size});
+        stats.fetch++;stats.asset++;stats.size+=blob.size;
+        lg(`✓ [${t.toUpperCase()}] ${fn} (${fmtSz(blob.size)})`,'lok');
+      }catch(e){
+        stats.err++;
+        lg(`✗ ${aUrl.substring(0,60)}... — ${e.message}`,'lerr');
+      }
+      done++;
+      prog(12+Math.round((done/total)*82));
+      updStats();renderAssets();
+    }
+
+    // Quét sâu trang con (nếu bật)
+    if(opts.deep&&subpages.length){
+      lg(`🕸 Quét sâu ${subpages.length} trang con...`,'linf');
+      for(const{url:spUrl,blob:spBlob} of subpages.slice(0,10)){
+        const spText=await spBlob.text();
+        const spLinks=parseHtml(spText,spUrl,{...opts,sub:false,deep:false});
+        lg(`  → Trang con: ${spUrl.substring(0,50)}... (${spLinks.length} file)`,'lwrn');
+        for(const{url:slUrl,type:slType} of spLinks.slice(0,30)){
+          if(!slUrl||captured.find(c=>c.url===slUrl))continue;
+          try{
+            const{blob,ct}=await pfetch(slUrl);
+            const t=slType!=='other'?slType:gType(slUrl,ct);
+            captured.push({url:slUrl,type:t,blob,filename:fname(slUrl,t),size:blob.size});
+            stats.fetch++;stats.asset++;stats.size+=blob.size;
+            updStats();
+          }catch{}
+        }
+        renderAssets();
+        await sleep(200);
+      }
+    }
+
+    prog(100);
+    setStatus(`Hoàn thành ✓`);
+    lg(`🎉 Xong! ${stats.asset} file, ${fmtSz(stats.size)} tổng cộng`,'lok');
+    if(captured.length){
+      document.getElementById('zipBtn').style.display='inline-flex';
+      document.getElementById('zipBtn2').style.display='inline-flex';
+    }
+  }catch(e){
+    lg(`💥 Lỗi: ${e.message}`,'lerr');
+    setStatus('Lỗi');
+    stats.err++;updStats();
+  }
+  running=false;
+  document.getElementById('startBtn').disabled=false;
+}
+
+// ─── MODE SWITCH ───
+function chonMode(m,btn){
+  currentMode=m;
+  document.querySelectorAll('.p-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('modeA').style.display=m==='A'?'block':'none';
+  document.getElementById('modeB').style.display=m==='B'?'block':'none';
+  document.getElementById('modeC').style.display=m==='C'?'block':'none';
+}
+function doiProxy(){
+  const v=document.getElementById('proxySelect').value;
+  document.getElementById('customProxy').style.display=v==='custom'?'block':'none';
+}
+
+// ─── MODE B: TẠO LỆNH ───
+function taoLenh(){
+  const url=document.getElementById('url').value.trim()||'https://target.com';
+  const folder=document.getElementById('folderName').value.trim()||'ripped';
+  const opts={
+    img:document.getElementById('gImg').checked,
+    sub:document.getElementById('gSub').checked,
+    deep:document.getElementById('gDeep').checked,
+  };
+  const lines=[
+    '#!/usr/bin/env bash',
+    `# SiteRipper Pro — nminhios`,
+    `# Tải toàn bộ source code website: ${url}`,
+    ``,
+    `TARGET="${url}"`,
+    `OUT="./${folder}"`,
+    `mkdir -p "$OUT"`,
+    ``,
+    `echo "🚀 Bắt đầu tải: $TARGET"`,
+    ``,
+    `# ─── CÁCH 1: wget (đơn giản, hiệu quả) ───`,
+    `wget \\`,
+    `  --mirror \\`,
+    `  --convert-links \\`,
+    `  --adjust-extension \\`,
+    `  --page-requisites \\`,
+    `  --no-parent \\`,
+    `  --wait=0.3 \\`,
+    `  --random-wait \\`,
+    `  --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36" \\`,
+    `  -P "$OUT" \\`,
+    `  "$TARGET"`,
+    ``,
+    `# ─── CÁCH 2: HTTrack (mạnh hơn, bypass anti-scrape) ───`,
+    `# httrack "$TARGET" -O "$OUT" "+*.$(echo $TARGET | sed 's|https\\?://||;s|/.*||')/*" \\`,
+    `#   --mirror --near --stay-on-same-address \\`,
+    `#   -F "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" \\`,
+    `#   --sockets=4 --connection-per-second=2`,
+    ``,
+    `# ─── CÁCH 3: curl (chỉ HTML+CSS+JS) ───`,
+    `# curl -L -A "Mozilla/5.0" "$TARGET" -o "$OUT/index.html"`,
+    ``,
+    `echo "✅ Hoàn thành! File lưu tại: $OUT/"`,
+    `ls -la "$OUT/"`,
+  ];
+  if(opts.deep){
+    lines.splice(14,0,`  --level=3 \\`);
+  }
+  document.getElementById('scriptCard').style.display='block';
+  document.getElementById('scriptOut').value=lines.join('\n');
+  lg('📋 Lệnh terminal đã được tạo','linf');
+}
+function copyLenh(){
+  navigator.clipboard.writeText(document.getElementById('scriptOut').value)
+    .then(()=>lg('✓ Đã copy lệnh','lok'))
+    .catch(()=>lg('Lỗi copy — hãy chọn thủ công','lerr'));
+}
+function taiScript(){
+  const blob=new Blob([document.getElementById('scriptOut').value],{type:'text/x-sh'});
+  const u=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=u;a.download='ripper_nminhios.sh';a.click();
+  setTimeout(()=>URL.revokeObjectURL(u),1000);
+}
+
+// ─── MODE C: THỦ CÔNG ───
+function phanTichThuCong(){
+  const html=document.getElementById('manualHtml').value;
+  const url=document.getElementById('url').value.trim()||'https://example.com';
+  if(!html){alert('Hãy dán HTML source vào trước!');return;}
+  const opts={
+    html:true,
+    css:document.getElementById('gCss').checked,
+    js:document.getElementById('gJs').checked,
+    img:document.getElementById('gImg').checked,
+    font:document.getElementById('gFont').checked,
+    json:document.getElementById('gJson').checked,
+    sub:false,deep:false
+  };
+  document.getElementById('log').innerHTML='';
+  const blob=new Blob([html],{type:'text/html'});
+  captured=[{url,type:'html',blob,filename:'index.html',size:blob.size}];
+  stats={fetch:1,asset:1,err:0,size:blob.size};
+  lg('✓ Đã phân tích HTML thủ công','lok');
+  const links=parseHtml(html,url,opts);
+  lg(`🔍 Tìm thấy ${links.length} file liên kết (chưa tải — dùng lệnh terminal hoặc Mode A)`,'lwrn');
+  links.forEach(({url:u,type:t})=>{
+    captured.push({url:u,type:t,blob:null,filename:fname(u,t),size:0});
+    stats.asset++;
+  });
+  updStats();renderAssets();
+  // Tự tạo lệnh cho các URL tìm được
+  const lines=['#!/usr/bin/env bash','# Tải từng asset đã phân tích',''];
+  links.forEach(({url:u,type:t})=>{
+    if(u) lines.push(`curl -sL "${u}" -o "${fname(u,t)}"`);
+  });
+  document.getElementById('scriptCard').style.display='block';
+  document.getElementById('scriptOut').value=lines.join('\n');
+  lg('✓ Lệnh curl đã được tạo trong tab B','lok');
+}
+
+// ─── TẢI ZIP ───
+async function taiZip(){
+  if(!captured.length)return;
+  lg('📦 Đang tạo ZIP...','linf');
+  if(!window.JSZip){
+    await new Promise((res,rej)=>{
+      const s=document.createElement('script');
+      s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+      s.onload=res;s.onerror=rej;
+      document.head.appendChild(s);
+    });
+  }
+  const zip=new JSZip();
+  const seen={};
+  for(const a of captured){
+    if(!a.blob)continue;
+    let fn=a.filename;
+    if(seen[fn]){seen[fn]++;fn=fn.replace(/(\.\w+)$/,`_${seen[a.filename]}$1`);}
+    else seen[fn]=1;
+    zip.file(fn,a.blob);
+  }
+  const content=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});
+  const u=URL.createObjectURL(content);
+  const link=document.createElement('a');
+  const host=document.getElementById('folderName').value.trim()||(()=>{try{return new URL(document.getElementById('url').value).hostname;}catch{return'site';}})();
+  link.href=u;link.download=`${host}_source.zip`;link.click();
+  setTimeout(()=>URL.revokeObjectURL(u),2000);
+  lg(`✅ ZIP đã tải — ${fmtSz(content.size)}`,'lok');
+}
+
+// ─── TẢI HTML HOÀN CHỈNH ───
+function taiHtmlHoanChinh(){
+  const htmlFile=captured.find(a=>a.type==='html'&&a.blob);
+  if(!htmlFile){alert('Chưa có file HTML nào!');return;}
+  const u=URL.createObjectURL(htmlFile.blob);
+  const a=document.createElement('a');a.href=u;a.download='index.html';a.click();
+  setTimeout(()=>URL.revokeObjectURL(u),1000);
+  lg('✓ Đã tải index.html','lok');
+}
+
+// ─── SCRIPT PYTHON BYPASS CF ───
+function taiPython(){
+  const py=`#!/usr/bin/env python3
+# SiteRipper Pro — nminhios
+# Bypass Cloudflare + tải toàn bộ website
+# Cài đặt: pip install requests beautifulsoup4 cloudscraper tqdm
+
+import cloudscraper
+import os, sys, re, time, random
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin, urlparse
+from tqdm import tqdm
+
+TARGET = "${document.getElementById('url').value.trim() || 'https://target.com'}"
+OUT_DIR = "./ripped"
+DELAY_MIN = 0.2
+DELAY_MAX = 0.8
+
+os.makedirs(OUT_DIR, exist_ok=True)
+scraper = cloudscraper.create_scraper(
+    browser={'browser':'chrome','platform':'windows','mobile':False}
+)
+
+def safe_name(url):
+    p = urlparse(url).path.strip('/').replace('/', '_') or 'index'
+    return re.sub(r'[<>:"|?*]', '_', p)[:80]
+
+def fetch(url):
+    time.sleep(random.uniform(DELAY_MIN, DELAY_MAX))
+    try:
+        r = scraper.get(url, timeout=15)
+        return r.content, r.headers.get('content-type','')
+    except Exception as e:
+        print(f"  ✗ Lỗi: {url} — {e}")
+        return None, None
+
+def parse_links(html, base):
+    soup = BeautifulSoup(html, 'html.parser')
+    links = []
+    for tag in soup.find_all(['link','script','img','source']):
+        src = tag.get('href') or tag.get('src') or tag.get('data-src')
+        if src: links.append(urljoin(base, src))
+    for tag in soup.find_all(style=True):
+        for m in re.finditer(r"url\\(['\"]?([^'\"\\)]+)['\"]?\\)", tag['style']):
+            links.append(urljoin(base, m.group(1)))
+    return list(set(links))
+
+print(f"🎯 Mục tiêu: {TARGET}")
+print("📥 Đang tải HTML chính...")
+html_content, _ = fetch(TARGET)
+if not html_content:
+    sys.exit("❌ Không thể tải trang chính!")
+
+with open(os.path.join(OUT_DIR, 'index.html'), 'wb') as f:
+    f.write(html_content)
+print(f"✓ index.html — {len(html_content)//1024}KB")
+
+links = parse_links(html_content, TARGET)
+print(f"🔍 Tìm thấy {len(links)} file")
+
+for url in tqdm(links, desc="Đang tải"):
+    content, ct = fetch(url)
+    if not content: continue
+    fn = safe_name(url)
+    ext_map = {'text/html':'.html','text/css':'.css','application/javascript':'.js',
+               'image/png':'.png','image/jpeg':'.jpg','image/svg+xml':'.svg',
+               'font/woff2':'.woff2'}
+    for mime, ext in ext_map.items():
+        if mime in ct and not fn.endswith(ext):
+            fn += ext; break
+    out = os.path.join(OUT_DIR, fn)
+    with open(out, 'wb') as f:
+        f.write(content)
+
+print(f"\\n✅ Hoàn thành! File lưu tại: {OUT_DIR}/")
+`;
+  const blob=new Blob([py],{type:'text/x-python'});
+  const u=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=u;a.download='bypass_ripper.py';a.click();
+  setTimeout(()=>URL.revokeObjectURL(u),1000);
+  lg('✓ Đã tải script Python bypass Cloudflare','lok');
+}
+
+// ─── CLEAR ───
+function xoaTat(){
+  captured=[];stats={fetch:0,asset:0,err:0,size:0};
+  updStats();prog(0);renderAssets();
+  document.getElementById('log').innerHTML='<div class="empty">Nhập URL và bấm Bắt Đầu Tải...</div>';
+  document.getElementById('zipBtn').style.display='none';
+  document.getElementById('zipBtn2').style.display='none';
+  document.getElementById('scriptCard').style.display='none';
+  running=false;
+  document.getElementById('startBtn').disabled=false;
+  setStatus('Chờ...');
+}
+function xoaDanhSach(){captured=[];renderAssets();document.getElementById('assetCount').textContent=0;}
+</script>
+</body>
+</html>
