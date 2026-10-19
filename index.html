@@ -2,1017 +2,869 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>SiteRipper Pro — nminhios</title>
 <style>
-:root {
-  --bg:#07070f;--surf:#0f0f1a;--surf2:#161625;--bord:#1f1f35;
+:root{
+  --bg:#07070f;--surf:#0f0f1a;--surf2:#161625;--bord:#1e1e30;
   --acc:#7c3aed;--acc2:#a855f7;--acc3:#06b6d4;
-  --txt:#e2e8f0;--mut:#64748b;
-  --grn:#10b981;--red:#ef4444;--yel:#f59e0b;--blu:#3b82f6;
-  --code:#080812;
-  padding-top:env(safe-area-inset-top,0px);
-  padding-bottom:env(safe-area-inset-bottom,0px);
+  --txt:#e2e8f0;--mut:#64748b;--grn:#10b981;--red:#ef4444;--yel:#f59e0b;
+  --code:#06060e;
 }
 @media(prefers-color-scheme:light){
-  :root{--bg:#f1f5f9;--surf:#fff;--surf2:#f8fafc;--bord:#e2e8f0;--txt:#0f172a;--mut:#94a3b8;--code:#f1f5f9}
+  :root{--bg:#f0f4f8;--surf:#fff;--surf2:#f8fafc;--bord:#e2e8f0;--txt:#0f172a;--mut:#94a3b8;--code:#f1f5f9}
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,sans-serif;font-size:15px}
-
-/* HEADER */
-.hdr{background:var(--surf);border-bottom:1px solid var(--bord);padding:14px 28px;display:flex;align-items:center;gap:14px;position:sticky;top:env(safe-area-inset-top,0px);z-index:10}
-.hdr-logo{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,var(--acc),var(--acc2),var(--acc3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hdr-tag{font-size:.68rem;font-weight:800;background:var(--acc);color:#fff;padding:3px 9px;border-radius:99px;letter-spacing:.06em}
-.hdr-user{margin-left:auto;font-size:.8rem;color:var(--mut)}
-.hdr-user span{color:var(--acc2);font-weight:700}
-.hdr-status{display:none;align-items:center;gap:7px;font-size:.78rem;font-weight:700;background:rgba(124,58,237,.15);border:1px solid var(--acc);border-radius:99px;padding:5px 14px;color:var(--acc2)}
-.hdr-status.show{display:flex}
-.hdr-status.done-ok{background:rgba(16,185,129,.15);border-color:var(--grn);color:var(--grn)}
-.hdr-status.done-err{background:rgba(239,68,68,.15);border-color:var(--red);color:var(--red)}
-
-/* SPINNER */
+html{font-size:15px;-webkit-text-size-adjust:100%;touch-action:manipulation}
+body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;overflow-x:hidden}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.spin{width:16px;height:16px;border:2px solid rgba(168,85,247,.3);border-top-color:var(--acc2);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
-.spin-lg{width:42px;height:42px;border:3px solid rgba(168,85,247,.18);border-top-color:var(--acc2);border-right-color:var(--acc3);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes fadein{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* HEADER */
+.hdr{background:var(--surf);border-bottom:1px solid var(--bord);padding:12px 20px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50}
+.logo{font-size:1.2rem;font-weight:900;background:linear-gradient(135deg,var(--acc),var(--acc2),var(--acc3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.vtag{font-size:.65rem;font-weight:800;background:var(--acc);color:#fff;padding:2px 8px;border-radius:99px}
+.hstatus{display:none;align-items:center;gap:6px;font-size:.75rem;font-weight:700;background:rgba(124,58,237,.14);border:1px solid var(--acc);border-radius:99px;padding:4px 12px;color:var(--acc2);margin-left:auto}
+.hstatus.show{display:flex}
+.hstatus.ok{background:rgba(16,185,129,.12);border-color:var(--grn);color:var(--grn)}
+.hstatus.fail{background:rgba(239,68,68,.12);border-color:var(--red);color:var(--red)}
+.huser{font-size:.78rem;color:var(--mut);margin-left:auto}.huser span{color:var(--acc2);font-weight:700}
+.hstatus+.huser{margin-left:0}
+
+/* SPINNER */
+.spin{width:14px;height:14px;border:2px solid rgba(168,85,247,.25);border-top-color:var(--acc2);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:inline-block}
+.spin-xl{width:44px;height:44px;border:3px solid rgba(168,85,247,.15);border-top-color:var(--acc2);border-right-color:var(--acc3);border-radius:50%;animation:spin .85s linear infinite}
 
 /* OVERLAY */
-#overlay{display:none;position:fixed;inset:0;background:rgba(7,7,15,.85);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:18px;backdrop-filter:blur(5px)}
-#overlay.show{display:flex}
-.ov-card{background:var(--surf);border:1px solid var(--bord);border-radius:18px;padding:36px 44px;text-align:center;min-width:300px;animation:fadeIn .22s ease}
-.ov-title{font-size:1rem;font-weight:800;color:var(--acc2);margin-top:18px}
-.ov-sub{font-size:.8rem;color:var(--mut);margin-top:6px;min-height:18px;word-break:break-all}
-.ov-prog-wrap{background:var(--bord);border-radius:99px;height:5px;margin-top:18px;overflow:hidden}
-.ov-bar{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2),var(--acc3));border-radius:99px;width:0%;transition:width .3s}
-.ov-stats{display:flex;gap:24px;justify-content:center;margin-top:16px}
-.ov-stat{font-size:.75rem;color:var(--mut);text-align:center}
-.ov-stat b{display:block;font-size:1.1rem;color:var(--txt);margin-bottom:2px}
-.ov-cancel{background:var(--surf2);border:1px solid var(--bord);color:var(--mut);border-radius:8px;padding:9px 22px;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s}
+#ov{display:none;position:fixed;inset:0;background:rgba(6,6,14,.88);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(6px)}
+#ov.on{display:flex}
+.ov-box{background:var(--surf);border:1px solid var(--bord);border-radius:18px;padding:34px 42px;text-align:center;min-width:290px;animation:fadein .22s ease}
+.ov-ttl{font-size:.95rem;font-weight:800;color:var(--acc2);margin-top:16px}
+.ov-sub{font-size:.78rem;color:var(--mut);margin-top:5px;min-height:16px;word-break:break-all;max-width:260px}
+.ov-pw{background:var(--bord);border-radius:99px;height:5px;margin:16px 0 14px;overflow:hidden}
+.ov-pb{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2),var(--acc3));width:0%;transition:width .28s;border-radius:99px}
+.ov-stats{display:flex;gap:20px;justify-content:center}
+.ov-stat{font-size:.72rem;color:var(--mut);text-align:center}
+.ov-stat b{display:block;font-size:1.05rem;color:var(--txt);margin-bottom:1px}
+.ov-cancel{background:var(--surf2);border:1px solid var(--bord);color:var(--mut);border-radius:8px;padding:8px 20px;font-size:.8rem;font-weight:700;cursor:pointer}
 .ov-cancel:hover{border-color:var(--red);color:var(--red)}
 
 /* LAYOUT */
-.wrap{max-width:990px;margin:0 auto;padding:28px 20px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-@media(max-width:700px){.grid{grid-template-columns:1fr}}
-.gap{margin-bottom:18px}
+.wrap{max-width:1000px;margin:0 auto;padding:22px 16px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:680px){.row{grid-template-columns:1fr}}
 
 /* CARD */
-.card{background:var(--surf);border:1px solid var(--bord);border-radius:14px;padding:22px}
-.card-title{font-size:.82rem;font-weight:800;color:var(--acc2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.card-title .dot{width:7px;height:7px;border-radius:50%;background:var(--acc2);display:inline-block;animation:pulse 2s infinite}
+.card{background:var(--surf);border:1px solid var(--bord);border-radius:13px;padding:20px}
+.ctitle{font-size:.78rem;font-weight:800;color:var(--acc2);letter-spacing:.07em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.cdot{width:6px;height:6px;border-radius:50%;background:var(--acc2);animation:pulse 2s infinite;flex-shrink:0}
 
 /* FORM */
-label{font-size:.78rem;color:var(--mut);display:block;margin-bottom:5px;margin-top:12px}
-label:first-child{margin-top:0}
-input,select,textarea{width:100%;background:var(--code);border:1px solid var(--bord);border-radius:8px;color:var(--txt);padding:9px 13px;font-size:.88rem;outline:none;transition:border .18s;font-family:inherit}
+label.lbl{font-size:.75rem;color:var(--mut);display:block;margin-bottom:4px;margin-top:11px}
+label.lbl:first-child{margin-top:0}
+input,select,textarea{width:100%;background:var(--code);border:1px solid var(--bord);border-radius:7px;color:var(--txt);padding:8px 12px;font-size:.85rem;outline:none;font-family:inherit;transition:border .15s}
 input:focus,select:focus,textarea:focus{border-color:var(--acc)}
 
-/* URL WRAP */
-.url-wrap{position:relative}
-.url-wrap input{padding-right:100px}
-.url-badge{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-size:.68rem;font-weight:800;padding:3px 8px;border-radius:99px;pointer-events:none;transition:all .2s}
-.url-badge.ok{background:rgba(16,185,129,.18);color:var(--grn)}
-.url-badge.bad{background:rgba(239,68,68,.18);color:var(--red)}
-.url-badge.checking{background:rgba(124,58,237,.18);color:var(--acc2)}
+/* URL ROW */
+.url-row{position:relative}
+.url-row input{padding-right:90px}
+.ubadge{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:.65rem;font-weight:800;padding:2px 7px;border-radius:99px;pointer-events:none}
+.ubadge.ok{background:rgba(16,185,129,.18);color:var(--grn)}
+.ubadge.bad{background:rgba(239,68,68,.18);color:var(--red)}
+.ubadge.chk{background:rgba(124,58,237,.18);color:var(--acc2)}
 
 /* TOGGLES */
-.tgl-group{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
-.tgl{display:flex;align-items:center;gap:5px;background:var(--code);border:1px solid var(--bord);border-radius:7px;padding:6px 11px;cursor:pointer;font-size:.78rem;user-select:none;transition:all .15s}
-.tgl input{accent-color:var(--acc);width:13px;height:13px}
-.tgl:has(input:checked){border-color:var(--acc);background:rgba(124,58,237,.1);color:var(--acc2)}
+.tgls{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
+.tgl{display:flex;align-items:center;gap:4px;background:var(--code);border:1px solid var(--bord);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:.75rem;user-select:none;transition:all .13s}
+.tgl input{accent-color:var(--acc);width:12px;height:12px}
+.tgl:has(input:checked){border-color:var(--acc);background:rgba(124,58,237,.09);color:var(--acc2)}
 
 /* BTNS */
-.btn{display:inline-flex;align-items:center;gap:7px;border:none;border-radius:8px;padding:10px 22px;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .18s}
-.btn-pri{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff}
-.btn-pri:hover{opacity:.85;transform:translateY(-1px)}
-.btn-sec{background:var(--surf2);color:var(--txt);border:1px solid var(--bord)}
-.btn-sec:hover{opacity:.8}
-.btn-grn{background:var(--grn);color:#fff}
-.btn-grn:hover{opacity:.85}
-.btn:disabled{opacity:.35;cursor:not-allowed;transform:none !important}
-.btn-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:7px;padding:9px 20px;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .15s}
+.pri{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff}
+.pri:hover{opacity:.84;transform:translateY(-1px)}
+.sec{background:var(--surf2);color:var(--txt);border:1px solid var(--bord)}
+.sec:hover{opacity:.8}
+.grn{background:var(--grn);color:#fff}
+.grn:hover{opacity:.85}
+.btn:disabled{opacity:.33;cursor:not-allowed;transform:none!important}
+.brow{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 
-/* PROXY TABS */
-.p-tabs{display:flex;border:1px solid var(--bord);border-radius:9px;overflow:hidden;margin-bottom:10px}
-.p-tab{flex:1;padding:7px 4px;text-align:center;font-size:.75rem;font-weight:700;cursor:pointer;background:var(--code);color:var(--mut);border:none;transition:all .15s}
-.p-tab.active{background:var(--acc);color:#fff}
+/* MODE TABS */
+.mtabs{display:flex;border:1px solid var(--bord);border-radius:8px;overflow:hidden;margin-bottom:12px}
+.mtab{flex:1;padding:7px;text-align:center;font-size:.73rem;font-weight:700;cursor:pointer;background:var(--code);color:var(--mut);border:none;transition:all .13s}
+.mtab.on{background:var(--acc);color:#fff}
 
 /* PROGRESS */
-.prog-wrap{background:var(--bord);border-radius:99px;height:5px;margin:10px 0;overflow:hidden}
-.prog-bar{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2),var(--acc3));border-radius:99px;width:0%;transition:width .25s}
-.stats{display:flex;gap:16px;flex-wrap:wrap;margin-top:6px}
-.stat{font-size:.75rem;color:var(--mut)}.stat b{color:var(--txt)}
+.pw{background:var(--bord);border-radius:99px;height:4px;margin:8px 0;overflow:hidden}
+.pb{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2),var(--acc3));border-radius:99px;width:0%;transition:width .22s}
+.stats{display:flex;gap:14px;flex-wrap:wrap;margin-top:5px}
+.st{font-size:.73rem;color:var(--mut)}.st b{color:var(--txt)}
 
 /* LOG */
-#log{background:var(--code);border:1px solid var(--bord);border-radius:8px;padding:13px;font-family:'Consolas','Fira Code',monospace;font-size:.74rem;line-height:1.8;height:220px;overflow-y:auto;color:var(--mut);margin-top:14px;transition:border .2s}
-#log.active{border-color:var(--acc)}
+#log{background:var(--code);border:1px solid var(--bord);border-radius:7px;padding:11px;font-family:'Consolas',monospace;font-size:.72rem;line-height:1.8;height:210px;overflow-y:auto;color:var(--mut);margin-top:12px;transition:border .18s}
+#log.act{border-color:var(--acc)}
 .lok{color:var(--grn)}.lerr{color:var(--red)}.linf{color:var(--acc3)}.lwrn{color:var(--yel)}
-.log-line{animation:fadeIn .12s ease}
+.ll{animation:fadein .12s ease}
 
 /* ASSET LIST */
-.a-list{border:1px solid var(--bord);border-radius:9px;overflow:hidden;max-height:260px;overflow-y:auto;margin-top:10px}
-.a-row{display:flex;align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid var(--bord);font-size:.75rem;animation:fadeIn .18s ease}
-.a-row:last-child{border-bottom:none}
-.a-badge{font-size:.65rem;font-weight:800;padding:2px 6px;border-radius:99px;flex-shrink:0}
+.alist{border:1px solid var(--bord);border-radius:8px;overflow:hidden;max-height:270px;overflow-y:auto;margin-top:8px}
+.arow{display:flex;align-items:center;gap:7px;padding:6px 11px;border-bottom:1px solid var(--bord);font-size:.73rem}
+.arow:last-child{border-bottom:none}
+.abadge{font-size:.62rem;font-weight:800;padding:2px 5px;border-radius:99px;flex-shrink:0}
 .bh{background:#1e3a5f;color:#60a5fa}.bc{background:#1a2e1a;color:#4ade80}
 .bj{background:#3a2e0a;color:#fbbf24}.bi{background:#2e1a2e;color:#e879f9}
-.bf{background:#1e2e3a;color:#67e8f9}.bo{background:#222;color:#94a3b8}
-.a-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mut)}
-.a-sz{flex-shrink:0;color:var(--mut);min-width:36px;text-align:right}
-.a-dl{background:var(--acc);color:#fff;border:none;border-radius:5px;padding:2px 8px;font-size:.68rem;font-weight:700;cursor:pointer;flex-shrink:0}
-.empty{text-align:center;color:var(--mut);padding:28px;font-size:.82rem}
+.bf{background:#1e2e3a;color:#67e8f9}.bo{background:#1e1e1e;color:#94a3b8}
+.aname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mut)}
+.asz{flex-shrink:0;color:var(--mut);min-width:44px;text-align:right;font-size:.7rem}
+.adl{background:var(--acc);color:#fff;border:none;border-radius:4px;padding:2px 7px;font-size:.65rem;font-weight:800;cursor:pointer;flex-shrink:0}
+.empty{text-align:center;color:var(--mut);padding:26px;font-size:.8rem}
 
-/* SCRIPT */
-#scriptOut{height:180px;font-family:monospace;font-size:.72rem;color:#4ade80;background:var(--code);resize:vertical}
-
-/* INFO BOX */
-.info-box{background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.22);border-radius:9px;padding:12px 15px;font-size:.78rem;line-height:1.7;color:var(--mut);margin-top:10px}
-.info-box b{color:var(--acc2)}
-.info-box code{background:var(--code);border:1px solid var(--bord);border-radius:4px;padding:1px 5px;font-family:monospace;color:var(--acc3)}
-
-/* ERR BOX */
-.err-box{display:none;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.35);border-radius:9px;padding:12px 15px;font-size:.8rem;color:var(--red);margin-top:12px;line-height:1.65;animation:fadeIn .2s ease}
-.err-box.show{display:block}
+/* INFO / ERR */
+.ibox{background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.2);border-radius:8px;padding:11px 14px;font-size:.76rem;line-height:1.7;color:var(--mut);margin-top:10px}
+.ibox b{color:var(--acc2)}.ibox code{background:var(--code);border:1px solid var(--bord);border-radius:3px;padding:1px 4px;font-family:monospace;color:var(--acc3)}
+.ebox{display:none;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:11px 14px;font-size:.78rem;color:var(--red);margin-top:10px;line-height:1.65;animation:fadein .18s ease}
+.ebox.on{display:block}
 
 /* SPEED */
-.speed-row{display:flex;gap:7px;margin-top:6px}
-.speed-btn{flex:1;padding:6px 2px;text-align:center;font-size:.72rem;font-weight:700;border:1px solid var(--bord);border-radius:7px;cursor:pointer;background:var(--code);color:var(--mut);transition:all .15s}
-.speed-btn.active{background:var(--acc);color:#fff;border-color:var(--acc)}
+.sprow{display:flex;gap:6px;margin-top:5px}
+.spb{flex:1;padding:5px 2px;text-align:center;font-size:.7rem;font-weight:700;border:1px solid var(--bord);border-radius:6px;cursor:pointer;background:var(--code);color:var(--mut);transition:all .13s}
+.spb.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+
+/* SCRIPT */
+#scriptOut{height:160px;font-family:monospace;font-size:.7rem;color:#4ade80;background:var(--code);resize:vertical}
+
+/* PROGRESS CARD SPINNER */
+.ctitle .lspin{display:none;margin-left:4px}
+.ctitle .lspin.on{display:inline-block}
 </style>
 </head>
 <body>
 
 <!-- OVERLAY -->
-<div id="overlay">
-  <div class="ov-card">
-    <div style="display:flex;justify-content:center"><div class="spin-lg"></div></div>
-    <div class="ov-title" id="ovTitle">Đang kết nối...</div>
-    <div class="ov-sub" id="ovSub">Vui lòng chờ...</div>
-    <div class="ov-prog-wrap"><div class="ov-bar" id="ovBar"></div></div>
+<div id="ov">
+  <div class="ov-box">
+    <div style="display:flex;justify-content:center"><div class="spin-xl"></div></div>
+    <div class="ov-ttl" id="ovTtl">Đang chạy...</div>
+    <div class="ov-sub" id="ovSub">Kết nối proxy...</div>
+    <div class="ov-pw"><div class="ov-pb" id="ovPb"></div></div>
     <div class="ov-stats">
-      <div class="ov-stat"><b id="ovFiles">0</b>file</div>
-      <div class="ov-stat"><b id="ovSizeD">0B</b>dung lượng</div>
-      <div class="ov-stat"><b id="ovErrD">0</b>lỗi</div>
+      <div class="ov-stat"><b id="ovF">0</b>file</div>
+      <div class="ov-stat"><b id="ovSz">0B</b>dung lượng</div>
+      <div class="ov-stat"><b id="ovE">0</b>lỗi</div>
     </div>
   </div>
-  <button class="ov-cancel" onclick="huyTai()">✕ Hủy</button>
+  <button class="ov-cancel" onclick="huy()">✕ Hủy</button>
 </div>
 
 <!-- HEADER -->
 <div class="hdr">
-  <span class="hdr-logo">SiteRipper Pro</span>
-  <span class="hdr-tag">v3.2</span>
-  <div class="hdr-status" id="hdrStatus">
-    <div class="spin" id="hdrSpin"></div>
-    <span id="hdrTxt">Đang chạy...</span>
-  </div>
-  <span class="hdr-user">Xin chào, <span>nminhios</span> 👋</span>
+  <span class="logo">SiteRipper Pro</span>
+  <span class="vtag">v4.0</span>
+  <div class="hstatus" id="hs"><div class="spin"></div><span id="hsTxt">Đang chạy...</span></div>
+  <span class="huser">Chào <span>nminhios</span> 👋</span>
 </div>
 
 <div class="wrap">
 
-  <!-- ROW 1 -->
-  <div class="grid gap">
+<!-- ROW 1 -->
+<div class="row">
 
-    <!-- CẤU HÌNH -->
-    <div class="card">
-      <div class="card-title"><span class="dot"></span>🎯 Website Mục Tiêu</div>
+  <!-- CẤU HÌNH -->
+  <div class="card">
+    <div class="ctitle"><span class="cdot"></span>🎯 Website Mục Tiêu</div>
 
-      <label>Địa chỉ website (URL)</label>
-      <div class="url-wrap">
-        <input type="url" id="url" placeholder="https://website-doi-thu.com" oninput="kiemUrl(this.value)" />
-        <span class="url-badge" id="urlBadge"></span>
-      </div>
-
-      <label>Tên file ZIP</label>
-      <input type="text" id="folderName" placeholder="doi_thu" />
-
-      <label>Loại file cần tải</label>
-      <div class="tgl-group">
-        <label class="tgl"><input type="checkbox" id="gHtml" checked> 📄 HTML</label>
-        <label class="tgl"><input type="checkbox" id="gCss" checked> 🎨 CSS</label>
-        <label class="tgl"><input type="checkbox" id="gJs" checked> ⚡ JavaScript</label>
-        <label class="tgl"><input type="checkbox" id="gImg"> 🖼 Hình ảnh</label>
-        <label class="tgl"><input type="checkbox" id="gFont"> 🔤 Font</label>
-        <label class="tgl"><input type="checkbox" id="gJson"> 📦 JSON/API</label>
-        <label class="tgl"><input type="checkbox" id="gSub"> 🔗 Trang con (1 cấp)</label>
-        <label class="tgl"><input type="checkbox" id="gDeep"> 🕸 Quét sâu (3 cấp)</label>
-      </div>
-
-      <label>Tốc độ tải</label>
-      <div class="speed-row">
-        <button class="speed-btn" onclick="setSpd(60,this)">🐢 Chậm</button>
-        <button class="speed-btn active" onclick="setSpd(150,this)">🚶 Vừa</button>
-        <button class="speed-btn" onclick="setSpd(280,this)">🐇 Nhanh</button>
-        <button class="speed-btn" onclick="setSpd(480,this)">🚀 Tối đa</button>
-      </div>
-
-      <div class="btn-row">
-        <button class="btn btn-pri" id="startBtn" onclick="batDau()">
-          <span id="startIco">▶</span><span id="startLbl">Bắt Đầu Tải</span>
-        </button>
-        <button class="btn btn-grn" id="zipBtn" style="display:none" onclick="taiZip()">📦 Tải ZIP</button>
-        <button class="btn btn-sec" onclick="xoaTat()">🗑 Xóa</button>
-      </div>
-
-      <div class="err-box" id="errBox"></div>
+    <label class="lbl">URL website cần tải</label>
+    <div class="url-row">
+      <input type="url" id="url" placeholder="https://website-doi-thu.com" oninput="kiemUrl(this.value)">
+      <span class="ubadge" id="ub"></span>
     </div>
 
-    <!-- PHƯƠNG PHÁP -->
-    <div class="card">
-      <div class="card-title"><span class="dot"></span>⚙️ Phương Pháp</div>
+    <label class="lbl">Tên file ZIP đầu ra</label>
+    <input type="text" id="fname" placeholder="doi_thu">
 
-      <div class="p-tabs">
-        <button class="p-tab active" onclick="chonMode('A',this)">A — Proxy</button>
-        <button class="p-tab" onclick="chonMode('B',this)">B — Terminal</button>
-        <button class="p-tab" onclick="chonMode('C',this)">C — Dán Thủ Công</button>
+    <label class="lbl">Loại file cần tải</label>
+    <div class="tgls">
+      <label class="tgl"><input type="checkbox" id="gH" checked> 📄 HTML</label>
+      <label class="tgl"><input type="checkbox" id="gC" checked> 🎨 CSS</label>
+      <label class="tgl"><input type="checkbox" id="gJ" checked> ⚡ JS</label>
+      <label class="tgl"><input type="checkbox" id="gI"> 🖼 Ảnh</label>
+      <label class="tgl"><input type="checkbox" id="gF"> 🔤 Font</label>
+      <label class="tgl"><input type="checkbox" id="gN"> 📦 JSON</label>
+      <label class="tgl"><input type="checkbox" id="gS"> 🔗 Trang con</label>
+      <label class="tgl"><input type="checkbox" id="gD"> 🕸 Quét sâu</label>
+    </div>
+
+    <label class="lbl">Tốc độ tải</label>
+    <div class="sprow">
+      <button class="spb" onclick="setSp(70,this)">🐢 Chậm</button>
+      <button class="spb on" onclick="setSp(160,this)">🚶 Vừa</button>
+      <button class="spb" onclick="setSp(290,this)">🐇 Nhanh</button>
+      <button class="spb" onclick="setSp(490,this)">🚀 Max</button>
+    </div>
+
+    <div class="brow">
+      <button class="btn pri" id="startBtn" onclick="main()">
+        <span id="sico">▶</span><span id="slbl">Bắt Đầu Tải</span>
+      </button>
+      <button class="btn grn" id="zBtn" style="display:none" onclick="doZip()">📦 ZIP</button>
+      <button class="btn sec" onclick="reset()">🗑 Xóa</button>
+    </div>
+    <div class="ebox" id="ebox"></div>
+  </div>
+
+  <!-- PHƯƠNG PHÁP -->
+  <div class="card">
+    <div class="ctitle"><span class="cdot"></span>⚙️ Phương Pháp</div>
+    <div class="mtabs">
+      <button class="mtab on" onclick="setMode('A',this)">A — Proxy Auto</button>
+      <button class="mtab" onclick="setMode('B',this)">B — Terminal</button>
+      <button class="mtab" onclick="setMode('C',this)">C — Dán HTML</button>
+    </div>
+
+    <!-- A -->
+    <div id="pA">
+      <label class="lbl">Proxy</label>
+      <select id="pxSel" onchange="onPx()">
+        <option value="https://api.allorigins.win/raw?url=">🟢 AllOrigins</option>
+        <option value="https://corsproxy.io/?">🟡 CorsProxy.io</option>
+        <option value="https://api.codetabs.com/v1/proxy?quest=">🟡 CodeTabs</option>
+        <option value="c">⚙️ Tự nhập...</option>
+      </select>
+      <div id="pxCustom" style="display:none;margin-top:6px">
+        <input type="text" id="pxUrl" placeholder="https://proxy.com/?url=">
       </div>
+      <label class="lbl">Tùy chọn</label>
+      <div class="tgls">
+        <label class="tgl"><input type="checkbox" id="oD" checked> ⏱ Delay ngẫu nhiên</label>
+        <label class="tgl"><input type="checkbox" id="oR" checked> 🔄 Thử lại 3x</label>
+        <label class="tgl"><input type="checkbox" id="oSw"> 🔀 Đổi proxy khi lỗi</label>
+      </div>
+      <div class="ibox" style="margin-top:10px">
+        <b>Lưu ý:</b> Proxy bypass CORS của browser. Nếu website chặn proxy → dùng <b>Cách B</b> hoặc <b>Script Python</b> ở phần dưới.
+      </div>
+    </div>
 
-      <div id="pA">
-        <label>Proxy Server</label>
-        <select id="proxySelect" onchange="onProxy()">
-          <option value="https://api.allorigins.win/raw?url=">🟢 AllOrigins (khuyên dùng)</option>
-          <option value="https://corsproxy.io/?">🟡 CorsProxy.io</option>
-          <option value="https://api.codetabs.com/v1/proxy?quest=">🟡 CodeTabs</option>
-          <option value="custom">⚙️ Tự nhập...</option>
-        </select>
-        <div id="customProxyWrap" style="display:none;margin-top:6px">
-          <input type="text" id="customProxyUrl" placeholder="https://proxy-cua-ban.com/?url=" />
-        </div>
-        <label style="margin-top:10px">Tùy chọn</label>
-        <div class="tgl-group">
-          <label class="tgl"><input type="checkbox" id="optDelay" checked> ⏱ Random delay</label>
-          <label class="tgl"><input type="checkbox" id="optRetry" checked> 🔄 Thử lại 3x</label>
-          <label class="tgl"><input type="checkbox" id="optSwitch"> 🔀 Đổi proxy khi lỗi</label>
-        </div>
-        <div class="info-box">
-          <b>Tại sao bị lỗi?</b><br>
-          Browser chặn fetch chéo domain (CORS). Proxy là cầu nối nhưng một số website block luôn proxy → dùng <b>Cách B</b> hoặc <b>Script Python</b> để bypass hoàn toàn.
+    <!-- B -->
+    <div id="pB" style="display:none">
+      <div class="ibox">
+        <b>Không bị chặn — chạy local:</b><br>
+        1. Nhập URL → bấm <b>Bắt Đầu Tải</b> → lệnh tự sinh<br>
+        2. Copy lệnh → mở Terminal/cmd → dán → Enter<br>
+        Cài wget: <code>winget install GnuWin32.Wget</code>
+      </div>
+      <div id="scWrap" style="display:none;margin-top:10px">
+        <textarea id="scriptOut" readonly></textarea>
+        <div class="brow">
+          <button class="btn sec" onclick="cpLenh()">📋 Copy</button>
+          <button class="btn pri" onclick="dlSh()">⬇ .sh</button>
         </div>
       </div>
+    </div>
 
-      <div id="pB" style="display:none">
-        <div class="info-box">
-          <b>Mạnh nhất — không bị chặn:</b><br>
-          1. Nhập URL bên trái → bấm <b>Bắt Đầu Tải</b><br>
-          2. Lệnh tự sinh ra bên dưới → copy<br>
-          3. Mở Terminal / cmd → dán → chạy<br><br>
-          Cần cài wget: <code>winget install GnuWin32.Wget</code>
-        </div>
-        <div id="scriptWrap" style="display:none;margin-top:12px">
-          <textarea id="scriptOut" readonly></textarea>
-          <div class="btn-row">
-            <button class="btn btn-sec" onclick="copyLenh()">📋 Copy</button>
-            <button class="btn btn-pri" onclick="taiScript()">⬇ Tải .sh</button>
-          </div>
-        </div>
+    <!-- C -->
+    <div id="pC" style="display:none">
+      <div class="ibox">
+        <b>Bypass tay — hoạt động 100%:</b><br>
+        1. Mở trang đối thủ → nhấn <code>Ctrl+U</code><br>
+        2. <code>Ctrl+A</code> rồi <code>Ctrl+C</code><br>
+        3. Dán vào ô dưới → bấm <b>Phân Tích + Tải</b>
       </div>
-
-      <div id="pC" style="display:none">
-        <div class="info-box">
-          <b>Bypass mọi thứ thủ công:</b><br>
-          1. Mở website mục tiêu → <code>Ctrl+U</code><br>
-          2. <code>Ctrl+A</code> → <code>Ctrl+C</code> (copy toàn bộ)<br>
-          3. Dán vào ô dưới → bấm <b>Phân Tích</b>
-        </div>
-        <label style="margin-top:10px">Dán source HTML</label>
-        <textarea id="manualHtml" style="height:110px;font-family:monospace;font-size:.72rem;resize:vertical" placeholder="<!DOCTYPE html>..."></textarea>
-        <div class="btn-row">
-          <button class="btn btn-pri" onclick="phanTich()">🔍 Phân Tích HTML</button>
-        </div>
+      <label class="lbl" style="margin-top:10px">Dán source HTML</label>
+      <textarea id="rawHtml" style="height:100px;font-family:monospace;font-size:.7rem;resize:vertical" placeholder="<!DOCTYPE html>..."></textarea>
+      <div class="brow">
+        <!-- NÚT MỚI: phân tích rồi TẢI LUÔN tất cả qua proxy -->
+        <button class="btn pri" onclick="modeC_run()">⬇ Phân Tích &amp; Tải Tất Cả</button>
+        <button class="btn sec" onclick="modeC_list()">📋 Chỉ Liệt Kê</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ROW 2 -->
-  <div class="grid gap">
+<!-- ROW 2 -->
+<div class="row">
 
-    <div class="card">
-      <div class="card-title">
-        <span class="dot"></span>📡 Tiến Độ
-        <div class="spin" id="logSpin" style="display:none;margin-left:4px"></div>
-      </div>
-      <div class="prog-wrap"><div class="prog-bar" id="progBar"></div></div>
-      <div class="stats">
-        <div class="stat">Đã tải: <b id="sFetch">0</b></div>
-        <div class="stat">Tổng file: <b id="sAsset">0</b></div>
-        <div class="stat">Lỗi: <b id="sErr">0</b></div>
-        <div class="stat">Dung lượng: <b id="sSize">0B</b></div>
-      </div>
-      <div id="log"><div class="empty">⏳ Nhập URL và bấm Bắt Đầu Tải...</div></div>
+  <!-- TIẾN ĐỘ -->
+  <div class="card">
+    <div class="ctitle">
+      <span class="cdot"></span>📡 Tiến Độ
+      <span class="spin lspin" id="lspin"></span>
     </div>
-
-    <div class="card">
-      <div class="card-title"><span class="dot"></span>📦 File Đã Tải (<span id="assetCount">0</span>)</div>
-      <input type="text" id="filterBox" placeholder="🔍 Lọc tên file..." oninput="locFile(this.value)" style="margin-bottom:10px" />
-      <div id="assetWrap"><div class="empty">Chưa có file nào...</div></div>
-      <div class="btn-row" style="margin-top:12px">
-        <button class="btn btn-grn" id="zipBtn2" style="display:none" onclick="taiZip()">📦 Tải ZIP</button>
-        <button class="btn btn-sec" onclick="taiHtml()">💾 Tải HTML</button>
-        <button class="btn btn-sec" onclick="xoaDSach()">🗑 Xóa DS</button>
-      </div>
+    <div class="pw"><div class="pb" id="pgBar"></div></div>
+    <div class="stats">
+      <div class="st">Tải: <b id="sf">0</b></div>
+      <div class="st">File: <b id="sa">0</b></div>
+      <div class="st">Lỗi: <b id="se">0</b></div>
+      <div class="st">Size: <b id="ss">0B</b></div>
     </div>
+    <div id="log"><div class="empty">⏳ Nhập URL và bấm Bắt Đầu Tải...</div></div>
   </div>
 
-  <!-- ROW 3 -->
-  <div class="card gap">
-    <div class="card-title"><span class="dot"></span>🔓 Vượt Bảo Vệ Nâng Cao</div>
-    <div class="grid">
-      <div>
-        <div style="font-size:.78rem;font-weight:700;color:var(--yel);margin-bottom:6px">⚠️ Cloudflare / Anti-bot?</div>
-        <div class="info-box" style="margin-top:0">Script Python dưới đây bypass được Cloudflare, chạy local không bị chặn gì hết.</div>
-        <button class="btn btn-pri" style="margin-top:8px;font-size:.8rem" onclick="taiPython()">🐍 Script Python Bypass CF</button>
-      </div>
-      <div>
-        <div style="font-size:.78rem;font-weight:700;color:var(--grn);margin-bottom:6px">✅ HTTrack (mạnh nhất)</div>
-        <div class="info-box" style="margin-top:0"><code>httrack "URL" -O "./ripped" --mirror</code><br>Tải toàn bộ HTML, CSS, JS, ảnh, font kể cả AJAX.</div>
-      </div>
-      <div>
-        <div style="font-size:.78rem;font-weight:700;color:var(--acc3);margin-bottom:6px">🖥 DevTools</div>
-        <div class="info-box" style="margin-top:0"><b>F12</b> → tab <b>Network</b> → reload → lọc JS/CSS → chuột phải → <b>Save as</b>.</div>
-      </div>
-      <div>
-        <div style="font-size:.78rem;font-weight:700;color:var(--acc2);margin-bottom:6px">💡 Tại sao Load Fail?</div>
-        <div class="info-box" style="margin-top:0">Browser block fetch website khác (CORS). Proxy bypass được nhưng website mạnh block proxy luôn → dùng <b>Cách B</b> hoặc <b>Python</b>.</div>
-      </div>
+  <!-- FILE ĐÃ TẢI -->
+  <div class="card">
+    <div class="ctitle"><span class="cdot"></span>📦 File Đã Tải <span id="cnt">(0)</span></div>
+    <input type="text" placeholder="🔍 Lọc..." oninput="filter(this.value)" style="margin-bottom:8px">
+    <div id="aw"><div class="empty">Chưa có file nào...</div></div>
+    <div class="brow" style="margin-top:10px">
+      <button class="btn grn" id="zBtn2" style="display:none" onclick="doZip()">📦 Tải ZIP</button>
+      <button class="btn sec" onclick="dlHtml()">💾 HTML</button>
+      <button class="btn sec" onclick="clearList()">🗑 Xóa DS</button>
     </div>
   </div>
+</div>
 
-</div><!-- .wrap -->
+<!-- ROW 3 -->
+<div class="card" style="margin-bottom:16px">
+  <div class="ctitle"><span class="cdot"></span>🔓 Bypass Nâng Cao</div>
+  <div class="row" style="margin-bottom:0">
+    <div>
+      <b style="font-size:.75rem;color:var(--yel)">⚠️ Cloudflare / Chặn Proxy?</b>
+      <div class="ibox" style="margin-top:6px">Script Python chạy local, bypass CF hoàn toàn, tải toàn bộ asset không thiếu file.</div>
+      <button class="btn pri" style="margin-top:8px;font-size:.78rem" onclick="dlPy()">🐍 Script Python Bypass</button>
+    </div>
+    <div>
+      <b style="font-size:.75rem;color:var(--grn)">✅ HTTrack — Tải 100% website</b>
+      <div class="ibox" style="margin-top:6px">
+        <code>httrack "URL" -O "./ripped" --mirror</code><br>
+        Tải toàn bộ HTML/CSS/JS/ảnh/font kể cả AJAX, lazy load.
+      </div>
+    </div>
+    <div>
+      <b style="font-size:.75rem;color:var(--acc3)">🖥 DevTools — Lấy từng file</b>
+      <div class="ibox" style="margin-top:6px"><b>F12</b> → Network → reload → lọc JS/CSS → chuột phải → <b>Save as</b>.</div>
+    </div>
+    <div>
+      <b style="font-size:.75rem;color:var(--acc2)">💡 Tại sao Load Fail?</b>
+      <div class="ibox" style="margin-top:6px">Browser chặn CORS. Proxy bypass được nhưng website mạnh chặn proxy luôn → dùng <b>B</b> hoặc <b>Python</b>.</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- wrap -->
 
 <script>
 'use strict';
 
-// ── STATE ──
-let captured = [];          // { url, type, blob|null, filename, size, idx }
-let capturedIdx = 0;        // unique index per item — tránh lỗi indexOf khi filter
-let stats = {fetch:0,asset:0,err:0,size:0};
-let running = false;
-let cancelFlag = false;
-let currentMode = 'A';
-let delayMs = 150;
-
-const PROXIES = [
+// ── GLOBALS ──
+let CAP = [];          // {idx,url,type,blob,filename,size}
+let UID = 0;
+let ST  = {f:0,a:0,e:0,sz:0};
+let run = false, cxl = false, mode = 'A', dly = 160;
+const PXS = [
   'https://api.allorigins.win/raw?url=',
   'https://corsproxy.io/?',
   'https://api.codetabs.com/v1/proxy?quest=',
 ];
 
-// ── HELPERS ──
-function lg(msg, cls='') {
-  const el = document.getElementById('log');
-  if (el.querySelector('.empty')) el.innerHTML = '';
-  const d = document.createElement('div');
-  d.className = 'log-line' + (cls ? ' '+cls : '');
-  d.textContent = '['+ts()+'] '+msg;
-  el.appendChild(d);
-  el.scrollTop = el.scrollHeight;
+// ── LOG ──
+function lg(m,c){
+  const el=document.getElementById('log');
+  if(el.querySelector('.empty'))el.innerHTML='';
+  const d=document.createElement('div');
+  d.className='ll'+(c?' '+c:'');
+  d.textContent='['+ts()+'] '+m;
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
 }
-function ts() {
-  const n = new Date();
-  return pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());
-}
-function pad(n) { return String(n).padStart(2,'0'); }
-function fmtSz(b) {
-  if (!b || b < 0) return '0B';
-  if (b < 1024) return b+'B';
-  if (b < 1048576) return (b/1024).toFixed(1)+'KB';
-  return (b/1048576).toFixed(2)+'MB';
-}
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function ts(){const n=new Date();return pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());}
+function pad(n){return String(n).padStart(2,'0');}
+const fmt=b=>{if(!b||b<0)return'0B';if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(2)+'MB';};
+const sl=ms=>new Promise(r=>setTimeout(r,ms));
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-// ── UI ──
-function setLoading(on, title, sub) {
-  document.getElementById('overlay').classList.toggle('show', on);
-  if (title) document.getElementById('ovTitle').textContent = title;
-  if (sub)   document.getElementById('ovSub').textContent = sub;
-  // header status
-  const hs = document.getElementById('hdrStatus');
-  if (on) {
-    hs.className = 'hdr-status show';
-    document.getElementById('hdrSpin').style.display = '';
-    document.getElementById('hdrTxt').textContent = title || 'Đang chạy...';
-  }
-  // log spinner + border
-  document.getElementById('logSpin').style.display = on ? 'flex' : 'none';
-  document.getElementById('log').classList.toggle('active', on);
-  // start btn
-  const btn = document.getElementById('startBtn');
-  btn.disabled = on;
-  document.getElementById('startIco').innerHTML = on
-    ? '<div class="spin" style="width:13px;height:13px;border-width:2px"></div>'
-    : '▶';
-  document.getElementById('startLbl').textContent = on ? 'Đang chạy...' : 'Bắt Đầu Tải';
+// ── UI HELPERS ──
+function setLoading(on,ttl,sub){
+  document.getElementById('ov').classList.toggle('on',on);
+  if(ttl)document.getElementById('ovTtl').textContent=ttl;
+  if(sub)document.getElementById('ovSub').textContent=sub;
+  const hs=document.getElementById('hs');
+  if(on){hs.className='hstatus show';document.getElementById('hsTxt').textContent=ttl||'Đang chạy...';}
+  document.getElementById('lspin').classList.toggle('on',on);
+  document.getElementById('log').classList.toggle('act',on);
+  const btn=document.getElementById('startBtn');
+  btn.disabled=on;
+  document.getElementById('sico').innerHTML=on?'<span class="spin" style="width:13px;height:13px;border-width:2px"></span>':'▶';
+  document.getElementById('slbl').textContent=on?'Đang chạy...':'Bắt Đầu Tải';
 }
-function setDone(ok) {
-  // tắt overlay sau 400ms để animation mượt
-  setTimeout(() => setLoading(false), 400);
-  const hs = document.getElementById('hdrStatus');
-  hs.className = 'hdr-status show ' + (ok ? 'done-ok' : 'done-err');
-  document.getElementById('hdrSpin').style.display = 'none';
-  document.getElementById('hdrTxt').textContent = ok
-    ? '✓ Hoàn thành — '+stats.asset+' file'
-    : '⚠ Lỗi — thử proxy khác';
+function setDone(ok){
+  setTimeout(()=>setLoading(false),500);
+  const hs=document.getElementById('hs');
+  hs.className='hstatus show '+(ok?'ok':'fail');
+  document.getElementById('hsTxt').textContent=ok?'✓ Xong — '+ST.a+' file':'⚠ Lỗi — thử proxy khác';
+  hs.querySelector('.spin').style.display='none';
 }
-function setProg(p) {
-  document.getElementById('ovBar').style.width = p+'%';
-  document.getElementById('progBar').style.width = p+'%';
+function setProg(p){document.getElementById('ovPb').style.width=p+'%';document.getElementById('pgBar').style.width=p+'%';}
+function setOvSub(t){document.getElementById('ovSub').textContent=t;}
+function syncST(){
+  document.getElementById('ovF').textContent=ST.a;
+  document.getElementById('ovSz').textContent=fmt(ST.sz);
+  document.getElementById('ovE').textContent=ST.e;
+  document.getElementById('sf').textContent=ST.f;
+  document.getElementById('sa').textContent=ST.a;
+  document.getElementById('se').textContent=ST.e;
+  document.getElementById('ss').textContent=fmt(ST.sz);
 }
-function setOvSub(t) { document.getElementById('ovSub').textContent = t; }
-function syncStats() {
-  document.getElementById('ovFiles').textContent  = stats.asset;
-  document.getElementById('ovSizeD').textContent  = fmtSz(stats.size);
-  document.getElementById('ovErrD').textContent   = stats.err;
-  document.getElementById('sFetch').textContent   = stats.fetch;
-  document.getElementById('sAsset').textContent   = stats.asset;
-  document.getElementById('sErr').textContent     = stats.err;
-  document.getElementById('sSize').textContent    = fmtSz(stats.size);
-}
-function showErr(msg) {
-  const b = document.getElementById('errBox');
-  b.innerHTML = '<b>⚠️ Lỗi:</b> '+msg+'<br><br>💡 Thử đổi Proxy hoặc dùng Cách B (Terminal)';
-  b.classList.add('show');
-}
-function hideErr() { document.getElementById('errBox').classList.remove('show'); }
-function huyTai() {
-  cancelFlag = true; running = false;
-  setLoading(false);
-  lg('⛔ Đã hủy','lwrn');
-}
+function showE(m){const b=document.getElementById('ebox');b.innerHTML='<b>⚠️ Lỗi:</b> '+m+'<br>💡 Đổi Proxy hoặc dùng Cách B / Script Python';b.classList.add('on');}
+function hideE(){document.getElementById('ebox').classList.remove('on');}
+function huy(){cxl=true;run=false;setLoading(false);lg('⛔ Đã hủy','lwrn');}
 
 // ── URL CHECK ──
-let _urlTimer;
-function kiemUrl(v) {
-  const el = document.getElementById('urlBadge');
-  clearTimeout(_urlTimer);
-  hideErr();
-  if (!v) { el.className='url-badge'; el.textContent=''; return; }
-  el.className='url-badge checking'; el.textContent='⟳';
-  _urlTimer = setTimeout(() => {
-    try {
-      const u = new URL(v);
-      if (u.protocol==='https:' || u.protocol==='http:') {
-        el.className='url-badge ok'; el.textContent='✓ hợp lệ';
-      } else {
-        el.className='url-badge bad'; el.textContent='✗ sai';
-      }
-    } catch { el.className='url-badge bad'; el.textContent='✗ sai'; }
-  }, 400);
+let _ut;
+function kiemUrl(v){
+  const el=document.getElementById('ub');
+  clearTimeout(_ut);hideE();
+  if(!v){el.className='ubadge';el.textContent='';return;}
+  el.className='ubadge chk';el.textContent='⟳';
+  _ut=setTimeout(()=>{
+    try{const u=new URL(v);el.className='ubadge '+(u.protocol.startsWith('http')?'ok':'bad');el.textContent=u.protocol.startsWith('http')?'✓ ok':'✗ sai';}
+    catch{el.className='ubadge bad';el.textContent='✗ sai';}
+  },400);
 }
 
-// ── ASSET RENDER ──
-// FIX: dùng item.idx thay vì captured.indexOf(a) — tránh sai khi filter
-function renderAssets(filter) {
-  const el = document.getElementById('assetWrap');
-  document.getElementById('assetCount').textContent = captured.length;
-  const list = filter
-    ? captured.filter(a => a.filename.toLowerCase().includes(filter.toLowerCase()))
-    : captured;
-  if (!list.length) { el.innerHTML='<div class="empty">Chưa có file nào...</div>'; return; }
-  el.innerHTML = '<div class="a-list">'+list.map(a =>
-    '<div class="a-row">'
-    +'<span class="a-badge '+bdg(a.type)+'">'+a.type.toUpperCase()+'</span>'
-    +'<span class="a-name" title="'+escHtml(a.url)+'">'+escHtml(a.filename)+'</span>'
-    +'<span class="a-sz">'+(a.size?fmtSz(a.size):'—')+'</span>'
-    +(a.blob ? '<button class="a-dl" onclick="taiMot('+a.idx+')">⬇</button>' : '')
-    +'</div>'
-  ).join('')+'</div>';
-  if (captured.length) {
-    document.getElementById('zipBtn').style.display  = 'inline-flex';
-    document.getElementById('zipBtn2').style.display = 'inline-flex';
-  }
+// ── RENDER ASSETS ──
+function renderA(flt){
+  const el=document.getElementById('aw');
+  document.getElementById('cnt').textContent='('+CAP.length+')';
+  const lst=flt?CAP.filter(a=>a.filename.toLowerCase().includes(flt.toLowerCase())):CAP;
+  if(!lst.length){el.innerHTML='<div class="empty">Chưa có file nào...</div>';return;}
+  el.innerHTML='<div class="alist">'+lst.map(a=>`
+    <div class="arow">
+      <span class="abadge ${bdg(a.type)}">${a.type.toUpperCase()}</span>
+      <span class="aname" title="${esc(a.url)}">${esc(a.filename)}</span>
+      <span class="asz">${a.size?fmt(a.size):'—'}</span>
+      ${a.blob?`<button class="adl" onclick="dlOne(${a.idx})">⬇</button>`:'<span style="font-size:.65rem;color:var(--mut);flex-shrink:0">—</span>'}
+    </div>`).join('')+'</div>';
+  ['zBtn','zBtn2'].forEach(id=>document.getElementById(id).style.display='inline-flex');
 }
-function bdg(t) { return {html:'bh',css:'bc',js:'bj',img:'bi',font:'bf'}[t]||'bo'; }
-function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function locFile(v) { renderAssets(v); }
-function taiMot(idx) {
-  const a = captured.find(x => x.idx===idx);
-  if (!a || !a.blob) return;
-  const u = URL.createObjectURL(a.blob);
-  const link = document.createElement('a'); link.href=u; link.download=a.filename; link.click();
-  setTimeout(() => URL.revokeObjectURL(u), 1200);
+const bdg=t=>({html:'bh',css:'bc',js:'bj',img:'bi',font:'bf'}[t]||'bo');
+function filter(v){renderA(v);}
+function dlOne(idx){
+  const a=CAP.find(x=>x.idx===idx);
+  if(!a||!a.blob)return;
+  const u=URL.createObjectURL(a.blob);
+  const l=document.createElement('a');l.href=u;l.download=a.filename;l.click();
+  setTimeout(()=>URL.revokeObjectURL(u),1200);
 }
 
 // ── URL UTILS ──
-function resolve(base, rel) {
-  if (!rel || rel.startsWith('data:') || rel.startsWith('javascript:') || rel.startsWith('#')) return null;
-  try { return new URL(rel, base).href; } catch { return null; }
+function res(base,rel){
+  if(!rel||rel.startsWith('data:')||rel.startsWith('javascript:')||rel.startsWith('#'))return null;
+  try{return new URL(rel,base).href;}catch{return null;}
 }
-
-// FIX: strip query trước khi detect ext
-function fname(url, type) {
-  try {
-    const u = new URL(url);
-    // pathname sạch, không có query
-    let p = u.pathname.replace(/^\/+/,'').replace(/[/\\?&=:#]/g,'_') || 'index';
-    const extMap = {html:'.html',css:'.css',js:'.js',img:'.png',font:'.woff2',json:'.json'};
-    const wantExt = extMap[type] || '.bin';
-    // kiểm tra ext từ pathname gốc (đã strip query)
-    if (!/\.\w{1,5}$/.test(u.pathname.split('/').pop() || '')) p += wantExt;
-    return p.substring(0,90);
-  } catch { return 'file_'+(capturedIdx)+type; }
+// strip query để detect ext đúng
+function fnam(url,type){
+  try{
+    const u=new URL(url);
+    const pathClean=u.pathname.split('/').pop()||'index';
+    let p=(u.pathname.replace(/^\/+/,'')||'index').replace(/[/\\?&=:#]/g,'_');
+    const emap={html:'.html',css:'.css',js:'.js',img:'.png',font:'.woff2',json:'.json'};
+    const want=emap[type]||'.bin';
+    // detect ext từ path sạch (không có query)
+    if(!/\.\w{1,5}$/.test(pathClean)) p+=want;
+    return p.substring(0,88)||('file'+UID);
+  }catch{return 'file'+UID+'.bin';}
 }
-
-function gType(url, ct) {
-  const u = (url||'').toLowerCase().split('?')[0];
-  ct = ct||'';
-  if (ct.includes('text/html')    || /\.html?$/.test(u))           return 'html';
-  if (ct.includes('text/css')     || u.endsWith('.css'))            return 'css';
-  if (ct.includes('javascript')   || /\.(m?js|cjs)$/.test(u))      return 'js';
-  if (ct.includes('image/')       || /\.(png|jpe?g|gif|svg|webp|ico|avif)$/.test(u)) return 'img';
-  if (/\.(woff2?|ttf|otf|eot)$/.test(u))                            return 'font';
-  if (ct.includes('json')         || u.endsWith('.json'))           return 'json';
-  return 'other';
+function gtype(url,ct){
+  const u=(url||'').toLowerCase().split('?')[0];ct=ct||'';
+  if(ct.includes('text/html')||/\.html?$/.test(u)) return'html';
+  if(ct.includes('text/css')||u.endsWith('.css')) return'css';
+  if(ct.includes('javascript')||/\.(m?js|cjs)$/.test(u)) return'js';
+  if(ct.includes('image/')||/\.(png|jpe?g|gif|svg|webp|ico|avif)$/.test(u)) return'img';
+  if(/\.(woff2?|ttf|otf|eot)$/.test(u)) return'font';
+  if(ct.includes('json')||u.endsWith('.json')) return'json';
+  return'other';
 }
 
 // ── PARSE HTML ──
-function parseHtml(html, base, opts) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-  const found = []; const seen = new Set();
-  function add(u, type) {
-    if (!u || seen.has(u)) return;
-    seen.add(u); found.push({url:u, type});
-  }
-  if (opts.css) {
-    doc.querySelectorAll('link[rel="stylesheet"]').forEach(el => add(resolve(base, el.getAttribute('href')), 'css'));
-    doc.querySelectorAll('style').forEach(el => {
-      for (const m of el.textContent.matchAll(/url\(['"]?([^'")\s]+)['"]?\)/g))
-        add(resolve(base, m[1]), 'css');
+function parse(html,base,opts){
+  const doc=new DOMParser().parseFromString(html,'text/html');
+  const out=[];const seen=new Set();
+  function add(u,t){if(!u||seen.has(u))return;seen.add(u);out.push({url:u,type:t});}
+  if(opts.css){
+    doc.querySelectorAll('link[rel="stylesheet"]').forEach(el=>add(res(base,el.getAttribute('href')),'css'));
+    doc.querySelectorAll('style').forEach(el=>{
+      for(const m of el.textContent.matchAll(/url\(['"]?([^'")\s]+)['"]?\)/g))add(res(base,m[1]),'css');
     });
   }
-  if (opts.js) {
-    doc.querySelectorAll('script[src]').forEach(el => add(resolve(base, el.getAttribute('src')), 'js'));
+  if(opts.js) doc.querySelectorAll('script[src]').forEach(el=>add(res(base,el.getAttribute('src')),'js'));
+  if(opts.img){
+    doc.querySelectorAll('img,source').forEach(el=>{
+      ['src','data-src','data-lazy-src','data-original'].forEach(a=>add(res(base,el.getAttribute(a)),'img'));
+    });
+    doc.querySelectorAll('[style]').forEach(el=>{
+      for(const m of (el.getAttribute('style')||'').matchAll(/url\(['"]?([^'")\s]+)['"]?\)/g))add(res(base,m[1]),'img');
+    });
+    doc.querySelectorAll('[srcset]').forEach(el=>{
+      el.getAttribute('srcset').split(',').forEach(s=>add(res(base,s.trim().split(/\s+/)[0]||''),'img'));
+    });
+    // background-image trong link preload ảnh
+    doc.querySelectorAll('link[rel="preload"][as="image"]').forEach(el=>add(res(base,el.getAttribute('href')),'img'));
   }
-  if (opts.img) {
-    doc.querySelectorAll('img').forEach(el => {
-      add(resolve(base, el.getAttribute('src')), 'img');
-      add(resolve(base, el.getAttribute('data-src')), 'img');
-      add(resolve(base, el.getAttribute('data-lazy-src')), 'img');
-    });
-    doc.querySelectorAll('[style]').forEach(el => {
-      const s = el.getAttribute('style') || '';
-      for (const m of s.matchAll(/url\(['"]?([^'")\s]+)['"]?\)/g))
-        add(resolve(base, m[1]), 'img');
-    });
-    doc.querySelectorAll('[srcset]').forEach(el => {
-      el.getAttribute('srcset').split(',').forEach(s => {
-        const u = (s.trim().split(/\s+/)[0] || '');
-        add(resolve(base, u), 'img');
+  if(opts.font){
+    doc.querySelectorAll('link[rel="preload"][as="font"],link[href*=".woff"],link[href*=".ttf"],link[href*=".otf"]')
+      .forEach(el=>add(res(base,el.getAttribute('href')),'font'));
+    doc.querySelectorAll('link[href*="fonts.googleapis.com"],link[href*="fonts.gstatic.com"]')
+      .forEach(el=>add(el.getAttribute('href'),'css'));
+  }
+  if(opts.sub||opts.deep){
+    try{const org=new URL(base).origin;
+      doc.querySelectorAll('a[href]').forEach(el=>{
+        const h=res(base,el.getAttribute('href'));
+        if(h&&h.startsWith(org)&&!h.includes('#'))add(h,'html');
       });
-    });
+    }catch{}
   }
-  if (opts.font) {
-    doc.querySelectorAll('link[rel="preload"][as="font"],link[href*=".woff"],link[href*=".ttf"]')
-      .forEach(el => add(resolve(base, el.getAttribute('href')), 'font'));
-    doc.querySelectorAll('link[href*="fonts.googleapis.com"]')
-      .forEach(el => add(el.getAttribute('href'), 'css'));
-  }
-  if (opts.json) {
-    doc.querySelectorAll('script[type="application/json"]').forEach(el => {
-      // inline json, không có src để fetch
-    });
-  }
-  if (opts.sub || opts.deep) {
-    try {
-      const origin = new URL(base).origin;
-      doc.querySelectorAll('a[href]').forEach(el => {
-        const h = resolve(base, el.getAttribute('href'));
-        if (h && h.startsWith(origin) && !h.includes('#')) add(h, 'html');
-      });
-    } catch {}
-  }
-  return found;
+  return out;
 }
 
-// ── PROXY FETCH ──
-// FIX: AbortSignal.timeout polyfill cho browser cũ
-function abortTimeout(ms) {
-  const ctrl = new AbortController();
-  setTimeout(() => ctrl.abort(), ms);
-  return ctrl.signal;
-}
-
-async function pfetch(url, proxyOverride) {
-  const sel = document.getElementById('proxySelect').value;
-  let proxy = proxyOverride || (sel === 'custom'
-    ? (document.getElementById('customProxyUrl').value || PROXIES[0])
-    : sel);
-
-  if (document.getElementById('optDelay').checked)
-    await sleep(delayMs + Math.random()*100);
-
-  const doRetry  = document.getElementById('optRetry').checked;
-  const doSwitch = document.getElementById('optSwitch').checked;
-  const maxTry   = doRetry ? 3 : 1;
-  let lastErr;
-
-  for (let t = 0; t < maxTry; t++) {
-    if (cancelFlag) throw new Error('Đã hủy');
-    try {
-      const resp = await fetch(proxy + encodeURIComponent(url), { signal: abortTimeout(18000) });
-      if (!resp.ok) throw new Error('HTTP '+resp.status);
-      const ct   = resp.headers.get('content-type') || '';
-      const blob = await resp.blob();
-      return {blob, ct};
-    } catch(e) {
-      lastErr = e;
-      if (t < maxTry-1) {
-        await sleep(600*(t+1));
-        lg('⟳ Thử lại lần '+(t+2)+'... ('+e.message+')','lwrn');
-        if (doSwitch) {
-          const i = PROXIES.indexOf(proxy);
-          proxy = PROXIES[(i+1) % PROXIES.length];
-          lg('🔀 Đổi proxy: '+proxy.substring(0,38)+'...','lwrn');
-        }
+// ── FETCH qua PROXY ──
+function abortSig(ms){const c=new AbortController();setTimeout(()=>c.abort(),ms);return c.signal;}
+async function pget(url,pxOv){
+  const sel=document.getElementById('pxSel').value;
+  let px=pxOv||(sel==='c'?(document.getElementById('pxUrl').value||PXS[0]):sel);
+  if(document.getElementById('oD').checked) await sl(dly+Math.random()*100);
+  const maxT=document.getElementById('oR').checked?3:1;
+  const doSw=document.getElementById('oSw').checked;
+  let last;
+  for(let t=0;t<maxT;t++){
+    if(cxl)throw new Error('Đã hủy');
+    try{
+      const r=await fetch(px+encodeURIComponent(url),{signal:abortSig(18000)});
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      const ct=r.headers.get('content-type')||'';
+      const blob=await r.blob();
+      return{blob,ct};
+    }catch(e){
+      last=e;
+      if(t<maxT-1){
+        await sl(600*(t+1));
+        lg('⟳ Thử lại '+(t+2)+'x ('+e.message+')','lwrn');
+        if(doSw){const i=PXS.indexOf(px);px=PXS[(i+1)%PXS.length];lg('🔀 Đổi proxy: '+px.substring(0,36)+'...','lwrn');}
       }
     }
   }
-  throw lastErr;
+  throw last;
 }
 
-// ── BẮT ĐẦU TẢI ──
-async function batDau() {
-  const url = document.getElementById('url').value.trim();
-  if (currentMode === 'B') { taoLenh(); return; }
-  if (currentMode === 'C') {
-    document.getElementById('pC').scrollIntoView({behavior:'smooth'});
-    return;
+// ── HELPER: TẢI DANH SÁCH LINK ──
+async function fetchLinks(links, total, startProg, endProg){
+  let done=0;
+  for(const{url:aUrl,type:aType}of links){
+    if(cxl)break;
+    if(!aUrl){done++;continue;}
+    try{
+      const{blob,ct}=await pget(aUrl);
+      const t=(aType&&aType!=='other')?aType:gtype(aUrl,ct);
+      const fn=fnam(aUrl,t);
+      const idx=UID++;
+      CAP.push({idx,url:aUrl,type:t,blob,filename:fn,size:blob.size});
+      ST.f++;ST.a++;ST.sz+=blob.size;
+      lg('✓ ['+t.toUpperCase()+'] '+fn+' ('+fmt(blob.size)+')','lok');
+    }catch(e){
+      ST.e++;
+      lg('✗ '+aUrl.substring(0,52)+'... — '+e.message,'lerr');
+    }
+    done++;
+    setProg(startProg+Math.round((done/Math.max(total,1))*(endProg-startProg)));
+    setOvSub('Đang tải '+done+'/'+total+'...');
+    syncST();renderA();
   }
-  if (!url) { showErr('Nhập URL website trước nminhios!'); return; }
-  try { new URL(url); } catch { showErr('URL sai định dạng. Ví dụ: https://example.com'); return; }
-  if (running) return;
+}
 
-  // RESET
-  captured = []; capturedIdx = 0;
-  stats = {fetch:0,asset:0,err:0,size:0};
-  cancelFlag = false; running = true;
-  syncStats(); setProg(0); renderAssets(); hideErr();
-  document.getElementById('zipBtn').style.display  = 'none';
-  document.getElementById('zipBtn2').style.display = 'none';
-  document.getElementById('log').innerHTML = '';
-  document.getElementById('hdrStatus').className = 'hdr-status';
-  setLoading(true, 'Đang kết nối proxy...', url);
+// ── MAIN: MODE A ──
+async function runA(){
+  const url=document.getElementById('url').value.trim();
+  if(!url){showE('Nhập URL đi nminhios!');return;}
+  try{new URL(url);}catch{showE('URL sai định dạng. VD: https://example.com');return;}
+  if(run)return;
 
-  const opts = {
-    html: document.getElementById('gHtml').checked,
-    css:  document.getElementById('gCss').checked,
-    js:   document.getElementById('gJs').checked,
-    img:  document.getElementById('gImg').checked,
-    font: document.getElementById('gFont').checked,
-    json: document.getElementById('gJson').checked,
-    sub:  document.getElementById('gSub').checked,
-    deep: document.getElementById('gDeep').checked,
-  };
+  CAP=[];UID=0;ST={f:0,a:0,e:0,sz:0};cxl=false;run=true;
+  syncST();setProg(0);renderA();hideE();
+  ['zBtn','zBtn2'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('log').innerHTML='';
+  document.getElementById('hs').className='hstatus';
+  setLoading(true,'Đang kết nối proxy...',url);
 
-  let ok = false;
-  try {
-    // 1. TẢI HTML CHÍNH
-    lg('🎯 Mục tiêu: '+url,'linf');
-    lg('📥 Đang tải HTML chính...','linf');
-    setOvSub('Đang tải trang chính...');
-    setProg(5);
+  const opts={html:document.getElementById('gH').checked,css:document.getElementById('gC').checked,
+    js:document.getElementById('gJ').checked,img:document.getElementById('gI').checked,
+    font:document.getElementById('gF').checked,json:document.getElementById('gN').checked,
+    sub:document.getElementById('gS').checked,deep:document.getElementById('gD').checked};
 
-    let htmlBlob, htmlText;
-    try {
-      const res = await pfetch(url);
-      htmlBlob = res.blob;
-      htmlText = await htmlBlob.text();
-    } catch(e) {
-      throw new Error('Không tải được trang chính: '+e.message+'. → Thử đổi proxy hoặc dùng Cách B.');
-    }
+  let ok=false;
+  try{
+    lg('🎯 Mục tiêu: '+url,'linf');lg('📥 Tải HTML chính...','linf');
+    setOvSub('Tải trang chính...');setProg(5);
 
-    const mainIdx = capturedIdx++;
-    stats.fetch++; stats.asset++; stats.size += htmlBlob.size;
-    captured.push({url, type:'html', blob:htmlBlob, filename:'index.html', size:htmlBlob.size, idx:mainIdx});
-    lg('✓ index.html ('+fmtSz(htmlBlob.size)+')','lok');
-    syncStats(); renderAssets(); setProg(12);
+    let htmlBlob,htmlTxt;
+    try{const r=await pget(url);htmlBlob=r.blob;htmlTxt=await htmlBlob.text();}
+    catch(e){throw new Error('Không tải được trang: '+e.message+' → Đổi proxy hoặc dùng Cách B');}
 
-    // 2. PARSE + TẢI ASSET
-    const links = parseHtml(htmlText, url, opts);
-    lg('🔍 Tìm thấy '+links.length+' file liên kết','linf');
-    setOvSub('Đang tải '+links.length+' file...');
+    const midx=UID++;ST.f++;ST.a++;ST.sz+=htmlBlob.size;
+    CAP.push({idx:midx,url,type:'html',blob:htmlBlob,filename:'index.html',size:htmlBlob.size});
+    lg('✓ index.html ('+fmt(htmlBlob.size)+')','lok');
+    syncST();renderA();setProg(10);
 
-    const total = links.length;
-    let done = 0;
+    const links=parse(htmlTxt,url,opts);
+    lg('🔍 Tìm thấy '+links.length+' asset','linf');
 
-    for (const {url:aUrl, type:aType} of links) {
-      if (cancelFlag) break;
-      if (!aUrl) { done++; continue; }
-      try {
-        const {blob, ct:act} = await pfetch(aUrl);
-        const t  = (aType && aType !== 'other') ? aType : gType(aUrl, act);
-        const fn = fname(aUrl, t);
-        const ci = capturedIdx++;
-        captured.push({url:aUrl, type:t, blob, filename:fn, size:blob.size, idx:ci});
-        stats.fetch++; stats.asset++; stats.size += blob.size;
-        lg('✓ ['+t.toUpperCase()+'] '+fn+' ('+fmtSz(blob.size)+')','lok');
-      } catch(e) {
-        stats.err++;
-        lg('✗ '+aUrl.substring(0,55)+'... — '+e.message,'lerr');
-      }
-      done++;
-      setProg(12 + Math.round((done/Math.max(total,1))*78));
-      setOvSub('Đang tải '+done+'/'+total+'...');
-      syncStats(); renderAssets();
-    }
+    await fetchLinks(links,links.length,10,88);
 
-    // 3. QUÉT SÂU
-    if (opts.deep && !cancelFlag) {
-      const subPages = captured.filter(a => a.type==='html' && a.blob && a.url !== url);
-      if (subPages.length) {
-        lg('🕸 Quét sâu '+subPages.length+' trang con...','linf');
-        for (const sp of subPages.slice(0,8)) {
-          if (cancelFlag) break;
-          try {
-            const spText  = await sp.blob.text();
-            const spLinks = parseHtml(spText, sp.url, {...opts, sub:false, deep:false});
-            for (const {url:su, type:st} of spLinks.slice(0,20)) {
-              if (!su || captured.find(c=>c.url===su) || cancelFlag) continue;
-              try {
-                const {blob,ct} = await pfetch(su);
-                const t  = st!=='other'?st:gType(su,ct);
-                const fn = fname(su,t);
-                const ci = capturedIdx++;
-                captured.push({url:su, type:t, blob, filename:fn, size:blob.size, idx:ci});
-                stats.fetch++; stats.asset++; stats.size += blob.size;
-                syncStats(); renderAssets();
-              } catch {}
-            }
-          } catch {}
-          await sleep(180);
+    // Quét sâu
+    if(opts.deep&&!cxl){
+      const subs=CAP.filter(a=>a.type==='html'&&a.blob&&a.url!==url).slice(0,8);
+      if(subs.length){
+        lg('🕸 Quét sâu '+subs.length+' trang con...','linf');
+        for(const sp of subs){
+          if(cxl)break;
+          try{
+            const t=await sp.blob.text();
+            const sl2=parse(t,sp.url,{...opts,sub:false,deep:false})
+              .filter(l=>l.url&&!CAP.find(c=>c.url===l.url)).slice(0,25);
+            await fetchLinks(sl2,sl2.length,88,98);
+          }catch{}
+          await sl(180);
         }
       }
     }
 
     setProg(100);
-    ok = stats.err < Math.max(stats.asset,1);
-    lg((ok?'🎉':'⚠️')+' Xong! '+stats.asset+' file — '+fmtSz(stats.size)+' — '+stats.err+' lỗi', ok?'lok':'lwrn');
-    if (captured.length) {
-      document.getElementById('zipBtn').style.display  = 'inline-flex';
-      document.getElementById('zipBtn2').style.display = 'inline-flex';
-    }
-    if (!ok && stats.asset <= 1)
-      showErr('Chỉ tải được '+stats.asset+' file, '+stats.err+' lỗi. Website đang chặn proxy. Hãy dùng Cách B hoặc Script Python.');
-
-  } catch(e) {
-    lg('💥 Lỗi: '+e.message,'lerr');
-    showErr(e.message);
+    ok=ST.e<Math.max(ST.a,1);
+    lg((ok?'🎉':'⚠️')+' Xong! '+ST.a+' file — '+fmt(ST.sz)+' — '+ST.e+' lỗi',ok?'lok':'lwrn');
+    if(!ok&&ST.a<=1) showE('Chỉ tải được '+ST.a+' file. Website chặn proxy → dùng Cách B hoặc Script Python.');
+  }catch(e){
+    lg('💥 '+e.message,'lerr');showE(e.message);
   }
+  run=false;setDone(ok);
+}
 
-  running = false;
-  setDone(ok);
+// ── MODE B ──
+function runB(){
+  const url=document.getElementById('url').value.trim()||'https://target.com';
+  const fo=document.getElementById('fname').value.trim()||'ripped';
+  const deep=document.getElementById('gD').checked;
+  const ls=[
+    '#!/usr/bin/env bash','# SiteRipper — nminhios','# Target: '+url,'',
+    'OUT="./'+fo+'"','mkdir -p "$OUT"','echo "Bat dau tai: '+url+'"','',
+    '# === wget ===','wget \\','  --mirror \\','  --convert-links \\',
+    '  --adjust-extension \\','  --page-requisites \\','  --no-parent \\',
+    '  '+(deep?'--level=3':'--level=1')+' \\',
+    '  --wait=0.5 --random-wait \\',
+    '  --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120" \\',
+    '  -P "$OUT" \\',' "'+url+'"','',
+    '# === HTTrack (mạnh hơn) ===',
+    '# httrack "'+url+'" -O "$OUT" --mirror -F "Mozilla/5.0 Chrome/120" --sockets=4','',
+    'echo "Xong! File: $OUT/"','ls -lh "$OUT/"'
+  ];
+  document.getElementById('scWrap').style.display='block';
+  document.getElementById('scriptOut').value=ls.join('\n');
+  lg('📋 Lệnh terminal đã tạo','linf');
+}
+function cpLenh(){navigator.clipboard.writeText(document.getElementById('scriptOut').value).then(()=>lg('✓ Đã copy','lok')).catch(()=>lg('Lỗi copy','lerr'));}
+function dlSh(){
+  const b=new Blob([document.getElementById('scriptOut').value],{type:'text/x-sh'});
+  const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='ripper.sh';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);
+}
+
+// ── MODE C: PHÂN TÍCH + TẢI LUÔN ──
+async function modeC_run(){
+  const html=document.getElementById('rawHtml').value;
+  const url=document.getElementById('url').value.trim()||'https://example.com';
+  if(!html){alert('Dán HTML source vào trước!');return;}
+  if(run)return;
+
+  const opts={html:true,css:document.getElementById('gC').checked,js:document.getElementById('gJ').checked,
+    img:document.getElementById('gI').checked,font:document.getElementById('gF').checked,
+    json:document.getElementById('gN').checked,sub:false,deep:false};
+
+  CAP=[];UID=0;ST={f:0,a:0,e:0,sz:0};cxl=false;run=true;
+  syncST();setProg(0);renderA();hideE();
+  ['zBtn','zBtn2'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('log').innerHTML='';
+  document.getElementById('hs').className='hstatus';
+  setLoading(true,'Đang phân tích + tải...','');
+
+  // Lưu HTML chính
+  const hblob=new Blob([html],{type:'text/html'});
+  const midx=UID++;ST.a++;ST.sz+=hblob.size;
+  CAP.push({idx:midx,url,type:'html',blob:hblob,filename:'index.html',size:hblob.size});
+  lg('✓ index.html (từ dán tay)','lok');
+
+  const links=parse(html,url,opts);
+  lg('🔍 Tìm thấy '+links.length+' asset — bắt đầu tải qua proxy...','linf');
+  syncST();renderA();setProg(5);
+
+  let ok=false;
+  try{
+    await fetchLinks(links,links.length,5,98);
+    setProg(100);
+    ok=ST.e<Math.max(ST.a,1);
+    lg((ok?'🎉':'⚠️')+' Xong! '+ST.a+' file — '+fmt(ST.sz)+' — '+ST.e+' lỗi',ok?'lok':'lwrn');
+    if(ST.e>0) lg('💡 File bị lỗi: có thể do proxy bị chặn → dùng Cách B để tải chúng riêng','lwrn');
+  }catch(e){
+    lg('💥 '+e.message,'lerr');showE(e.message);
+  }
+  run=false;setDone(ok);
+}
+
+// Mode C chỉ liệt kê (không tải)
+function modeC_list(){
+  const html=document.getElementById('rawHtml').value;
+  const url=document.getElementById('url').value.trim()||'https://example.com';
+  if(!html){alert('Dán HTML source vào trước!');return;}
+  const opts={html:true,css:document.getElementById('gC').checked,js:document.getElementById('gJ').checked,
+    img:document.getElementById('gI').checked,font:document.getElementById('gF').checked,
+    json:document.getElementById('gN').checked,sub:false,deep:false};
+  document.getElementById('log').innerHTML='';
+  const hblob=new Blob([html],{type:'text/html'});
+  const midx=UID++;
+  CAP=[{idx:midx,url,type:'html',blob:hblob,filename:'index.html',size:hblob.size}];
+  ST={f:1,a:1,e:0,sz:hblob.size};
+  lg('✓ HTML chính đã lưu','lok');
+  const links=parse(html,url,opts);
+  lg('🔍 Tìm thấy '+links.length+' asset (chỉ liệt kê — bấm "Phân Tích & Tải Tất Cả" để tải)','lwrn');
+  links.forEach(({url:u,type:t})=>{
+    const ci=UID++;ST.a++;
+    CAP.push({idx:ci,url:u,type:t,blob:null,filename:fnam(u,t),size:0});
+  });
+  syncST();renderA();
+  // Sinh lệnh curl để tải những file chưa có blob
+  const cls=['#!/usr/bin/env bash','# Tải asset — nminhios','mkdir -p ripped',''];
+  links.forEach(({url:u,type:t})=>{if(u)cls.push('curl -sL "'+u+'" -o "ripped/'+fnam(u,t)+'"');});
+  document.getElementById('scWrap').style.display='block';
+  document.getElementById('scriptOut').value=cls.join('\n');
 }
 
 // ── MODE SWITCH ──
-function chonMode(m, btn) {
-  currentMode = m;
-  document.querySelectorAll('.p-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  ['pA','pB','pC'].forEach((id,i) => {
-    document.getElementById(id).style.display = (['A','B','C'][i]===m) ? 'block' : 'none';
-  });
-  // reset scriptWrap khi rời Cách B
-  if (m !== 'B') document.getElementById('scriptWrap').style.display = 'none';
+function setMode(m,btn){
+  mode=m;
+  document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  document.getElementById('pA').style.display=m==='A'?'block':'none';
+  document.getElementById('pB').style.display=m==='B'?'block':'none';
+  document.getElementById('pC').style.display=m==='C'?'block':'none';
+  if(m!=='B')document.getElementById('scWrap').style.display='none';
 }
-function onProxy() {
-  const v = document.getElementById('proxySelect').value;
-  document.getElementById('customProxyWrap').style.display = v==='custom'?'block':'none';
-}
-function setSpd(ms, btn) {
-  delayMs = ms;
-  document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+function onPx(){const v=document.getElementById('pxSel').value;document.getElementById('pxCustom').style.display=v==='c'?'block':'none';}
+function setSp(ms,btn){dly=ms;document.querySelectorAll('.spb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+
+// ── MAIN ENTRY ──
+function main(){
+  if(mode==='A')runA();
+  else if(mode==='B')runB();
+  else document.getElementById('pC').scrollIntoView({behavior:'smooth'});
 }
 
-// ── MODE B: TẠO LỆNH ──
-function taoLenh() {
-  const url    = document.getElementById('url').value.trim() || 'https://target.com';
-  const folder = document.getElementById('folderName').value.trim() || 'ripped';
-  const deep   = document.getElementById('gDeep').checked;
-  const lines  = [
-    '#!/usr/bin/env bash',
-    '# SiteRipper Pro — nminhios',
-    '# Mục tiêu: '+url,
-    '',
-    'OUT="./'+folder+'"',
-    'mkdir -p "$OUT"',
-    'echo "Bat dau tai: '+url+'"',
-    '',
-    '# CÁCH 1: wget',
-    'wget \\',
-    '  --mirror \\',
-    '  --convert-links \\',
-    '  --adjust-extension \\',
-    '  --page-requisites \\',
-    '  --no-parent \\',
-    (deep ? '  --level=3 \\' : '  --level=1 \\'),
-    '  --wait=0.3 --random-wait \\',
-    '  --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120" \\',
-    '  -P "$OUT" \\',
-    '  "'+url+'"',
-    '',
-    '# CÁCH 2: HTTrack (mạnh hơn)',
-    '# httrack "'+url+'" -O "$OUT" --mirror -F "Mozilla/5.0 Chrome/120" --sockets=4',
-    '',
-    'echo "Xong! File tai: $OUT/"',
-    'ls -lh "$OUT/"',
-  ];
-  document.getElementById('scriptWrap').style.display = 'block';
-  document.getElementById('scriptOut').value = lines.join('\n');
-  lg('📋 Lệnh terminal đã được tạo','linf');
-}
-function copyLenh() {
-  navigator.clipboard.writeText(document.getElementById('scriptOut').value)
-    .then(() => lg('✓ Đã copy lệnh','lok'))
-    .catch(() => lg('Lỗi copy — chọn thủ công','lerr'));
-}
-function taiScript() {
-  const blob = new Blob([document.getElementById('scriptOut').value],{type:'text/x-sh'});
-  const u = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=u; a.download='ripper_nminhios.sh'; a.click();
-  setTimeout(()=>URL.revokeObjectURL(u),1000);
-}
-
-// ── MODE C: PHÂN TÍCH THỦ CÔNG ──
-function phanTich() {
-  const html = document.getElementById('manualHtml').value;
-  const url  = document.getElementById('url').value.trim() || 'https://example.com';
-  if (!html) { alert('Dán HTML source vào trước!'); return; }
-  const opts = {
-    html:true,
-    css:  document.getElementById('gCss').checked,
-    js:   document.getElementById('gJs').checked,
-    img:  document.getElementById('gImg').checked,
-    font: document.getElementById('gFont').checked,
-    json: document.getElementById('gJson').checked,
-    sub:false, deep:false
-  };
-  document.getElementById('log').innerHTML = '';
-  const blob = new Blob([html],{type:'text/html'});
-  const mainIdx = capturedIdx++;
-  captured = [{url, type:'html', blob, filename:'index.html', size:blob.size, idx:mainIdx}];
-  stats = {fetch:1,asset:1,err:0,size:blob.size};
-  lg('✓ Đã phân tích HTML','lok');
-  const links = parseHtml(html, url, opts);
-  lg('🔍 Tìm thấy '+links.length+' file liên kết (chưa tải — dùng lệnh curl dưới)','lwrn');
-  links.forEach(({url:u, type:t}) => {
-    const ci = capturedIdx++;
-    captured.push({url:u, type:t, blob:null, filename:fname(u,t), size:0, idx:ci});
-    stats.asset++;
-  });
-  syncStats(); renderAssets();
-  // sinh lệnh curl
-  const lines = ['#!/usr/bin/env bash','# Tải asset từ: '+url,''];
-  links.forEach(({url:u, type:t}) => { if(u) lines.push('curl -sL "'+u+'" -o "'+fname(u,t)+'"'); });
-  document.getElementById('scriptWrap').style.display = 'block';
-  document.getElementById('scriptOut').value = lines.join('\n');
-  lg('✓ Lệnh curl đã sinh ra ở Cách B','lok');
-}
-
-// ── TẢI ZIP ──
-// FIX: try/catch toàn bộ bao gồm load JSZip
-async function taiZip() {
-  if (!captured.length) return;
-  lg('📦 Đang tạo ZIP...','linf');
-  try {
-    if (!window.JSZip) {
-      await new Promise((res,rej) => {
-        const s = document.createElement('script');
-        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-        s.onload = res; s.onerror = () => rej(new Error('Không tải được JSZip'));
+// ── ZIP ──
+async function doZip(){
+  if(!CAP.length)return;
+  lg('📦 Tạo ZIP...','linf');
+  try{
+    if(!window.JSZip){
+      await new Promise((res,rej)=>{
+        const s=document.createElement('script');
+        s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+        s.onload=res;s.onerror=()=>rej(new Error('Không tải JSZip'));
         document.head.appendChild(s);
       });
     }
-    const zip  = new JSZip();
-    const seen = {};
-    for (const a of captured) {
-      if (!a.blob) continue;
-      let fn = a.filename;
-      if (seen[fn]) { seen[fn]++; fn = fn.replace(/(\.\w+)$/,'_'+seen[a.filename]+'$1'); }
-      else seen[fn] = 1;
-      zip.file(fn, a.blob);
+    const zip=new JSZip();const seen={};
+    for(const a of CAP){
+      if(!a.blob)continue;
+      let fn=a.filename;
+      if(seen[fn]){seen[fn]++;fn=fn.replace(/(\.\w+)$/,'_'+seen[a.filename]+'$1');}else seen[fn]=1;
+      zip.file(fn,a.blob);
     }
-    const content = await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});
-    const u = URL.createObjectURL(content);
-    const link = document.createElement('a');
-    const host = document.getElementById('folderName').value.trim() || (() => {
-      try { return new URL(document.getElementById('url').value).hostname; } catch { return 'site'; }
-    })();
-    link.href = u; link.download = host+'_source.zip'; link.click();
+    const c=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});
+    const u=URL.createObjectURL(c);
+    const l=document.createElement('a');
+    const host=document.getElementById('fname').value.trim()||(()=>{try{return new URL(document.getElementById('url').value).hostname;}catch{return'site';}})();
+    l.href=u;l.download=host+'_src.zip';l.click();
     setTimeout(()=>URL.revokeObjectURL(u),2000);
-    lg('✅ ZIP đã tải — '+fmtSz(content.size),'lok');
-  } catch(e) {
-    lg('💥 Lỗi tạo ZIP: '+e.message,'lerr');
-    showErr('Tạo ZIP thất bại: '+e.message);
-  }
+    lg('✅ ZIP tải xong — '+fmt(c.size),'lok');
+  }catch(e){lg('💥 ZIP lỗi: '+e.message,'lerr');showE('ZIP thất bại: '+e.message);}
 }
 
-// ── TẢI HTML ──
-function taiHtml() {
-  const f = captured.find(a => a.type==='html' && a.blob);
-  if (!f) { alert('Chưa có HTML!'); return; }
-  const u = URL.createObjectURL(f.blob);
-  const a = document.createElement('a'); a.href=u; a.download='index.html'; a.click();
+// ── DL HTML ──
+function dlHtml(){
+  const f=CAP.find(a=>a.type==='html'&&a.blob);
+  if(!f){alert('Chưa có HTML!');return;}
+  const u=URL.createObjectURL(f.blob);
+  const a=document.createElement('a');a.href=u;a.download='index.html';a.click();
   setTimeout(()=>URL.revokeObjectURL(u),1000);
   lg('✓ Đã tải index.html','lok');
 }
 
-// ── PYTHON BYPASS CF ──
-function taiPython() {
-  const tUrl = document.getElementById('url').value.trim() || 'https://target.com';
-  const py = `#!/usr/bin/env python3
-# SiteRipper Pro — bypass Cloudflare — nminhios
-# pip install cloudscraper beautifulsoup4 tqdm
-
-import cloudscraper, os, sys, re, time, random
+// ── PYTHON ──
+function dlPy(){
+  const turl=document.getElementById('url').value.trim()||'https://target.com';
+  const py=`#!/usr/bin/env python3
+# SiteRipper bypass CF — nminhios
+# pip install cloudscraper beautifulsoup4 tqdm requests
+import cloudscraper,os,sys,re,time,random
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin,urlparse
 from tqdm import tqdm
 
-TARGET  = "${tUrl}"
-OUT_DIR = "./ripped"
-DELAY   = (0.4, 1.2)
-
-os.makedirs(OUT_DIR, exist_ok=True)
-sc = cloudscraper.create_scraper(browser={'browser':'chrome','platform':'windows','mobile':False})
+TARGET="${turl}"
+OUT="./ripped"
+DELAY=(0.4,1.3)
+os.makedirs(OUT,exist_ok=True)
+sc=cloudscraper.create_scraper(browser={'browser':'chrome','platform':'windows','mobile':False})
 
 def sname(url):
-    p = urlparse(url).path.strip('/').replace('/','_') or 'index'
+    p=urlparse(url).path.strip('/').replace('/','_') or 'index'
     return re.sub(r'[<>:"|?*\\\\]','_',p)[:80]
-
-def fetch(url):
+def get(url):
     time.sleep(random.uniform(*DELAY))
-    try:
-        r = sc.get(url, timeout=20)
-        return r.content, r.headers.get('content-type','')
-    except Exception as e:
-        print(f"  Loi {url[:55]}: {e}"); return None,''
-
-def parse(html, base):
-    soup = BeautifulSoup(html,'html.parser')
-    out = []
-    for tag in soup.find_all(['link','script','img','source']):
-        src = tag.get('href') or tag.get('src') or tag.get('data-src')
+    try: r=sc.get(url,timeout=20); return r.content,r.headers.get('content-type','')
+    except Exception as e: print(f"  Loi {url[:50]}: {e}"); return None,''
+def links(html,base):
+    s=BeautifulSoup(html,'html.parser');out=[]
+    for t in s.find_all(['link','script','img','source']):
+        src=t.get('href') or t.get('src') or t.get('data-src')
         if src: out.append(urljoin(base,src))
-    for tag in soup.find_all(style=True):
-        for m in re.finditer(r"url\\\\(['\"]?([^'\"\\\\)]+)['\"]?\\\\)",str(tag.get('style',''))):
+    for t in s.find_all(style=True):
+        for m in re.finditer(r"url\\\\(['\"]?([^'\"\\\\)]+)['\"]?\\\\)",str(t.get('style',''))):
             out.append(urljoin(base,m.group(1)))
     return list(dict.fromkeys(out))
 
-print(f"Muc tieu: {TARGET}")
-html,_ = fetch(TARGET)
+print(f"Target: {TARGET}")
+html,_=get(TARGET)
 if not html: sys.exit("Khong tai duoc!")
-with open(os.path.join(OUT_DIR,'index.html'),'wb') as f: f.write(html)
-print(f"OK index.html ({len(html)//1024}KB)")
-links = parse(html, TARGET); print(f"Tim thay {len(links)} file")
-
-EXTS = {'text/html':'.html','text/css':'.css','application/javascript':'.js',
-        'image/png':'.png','image/jpeg':'.jpg','image/svg+xml':'.svg',
-        'image/webp':'.webp','font/woff2':'.woff2','application/json':'.json'}
-
-for url in tqdm(links, desc="Tai"):
-    c,ct = fetch(url)
+with open(os.path.join(OUT,'index.html'),'wb') as f: f.write(html)
+print(f"index.html OK ({len(html)//1024}KB)")
+ls=links(html,TARGET); print(f"Tim thay {len(ls)} file")
+EXTS={'text/html':'.html','text/css':'.css','application/javascript':'.js',
+    'image/png':'.png','image/jpeg':'.jpg','image/svg+xml':'.svg',
+    'image/webp':'.webp','font/woff2':'.woff2','application/json':'.json'}
+for url in tqdm(ls,desc='Tai'):
+    c,ct=get(url)
     if not c: continue
-    fn = sname(url)
+    fn=sname(url)
     for mime,ext in EXTS.items():
         if mime in ct and not fn.endswith(ext): fn+=ext; break
-    with open(os.path.join(OUT_DIR,fn),'wb') as f: f.write(c)
-
-print(f"Hoan thanh! File tai: {OUT_DIR}/")
+    with open(os.path.join(OUT,fn),'wb') as f: f.write(c)
+print(f"Xong! {OUT}/")
 `;
-  const blob = new Blob([py],{type:'text/x-python'});
-  const u = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=u; a.download='bypass_ripper.py'; a.click();
+  const b=new Blob([py],{type:'text/x-python'});
+  const u=URL.createObjectURL(b);
+  const a=document.createElement('a');a.href=u;a.download='ripper_nminhios.py';a.click();
   setTimeout(()=>URL.revokeObjectURL(u),1000);
   lg('✓ Đã tải script Python','lok');
 }
 
 // ── CLEAR ──
-function xoaTat() {
-  captured = []; capturedIdx = 0;
-  stats = {fetch:0,asset:0,err:0,size:0};
-  cancelFlag = false; running = false;
-  syncStats(); setProg(0); renderAssets(); hideErr();
-  document.getElementById('log').innerHTML = '<div class="empty">⏳ Nhập URL và bấm Bắt Đầu Tải...</div>';
-  document.getElementById('zipBtn').style.display  = 'none';
-  document.getElementById('zipBtn2').style.display = 'none';
-  document.getElementById('scriptWrap').style.display = 'none';
-  document.getElementById('hdrStatus').className = 'hdr-status';
-  document.getElementById('url').value = '';
-  document.getElementById('urlBadge').className = 'url-badge';
-  document.getElementById('urlBadge').textContent = '';
+function reset(){
+  CAP=[];UID=0;ST={f:0,a:0,e:0,sz:0};cxl=false;run=false;
+  syncST();setProg(0);renderA();hideE();
+  document.getElementById('log').innerHTML='<div class="empty">⏳ Nhập URL và bấm Bắt Đầu Tải...</div>';
+  ['zBtn','zBtn2'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('scWrap').style.display='none';
+  document.getElementById('hs').className='hstatus';
+  document.getElementById('url').value='';
+  document.getElementById('ub').className='ubadge';document.getElementById('ub').textContent='';
   setLoading(false);
 }
-function xoaDSach() {
-  captured = []; capturedIdx = 0;
-  renderAssets();
-  document.getElementById('assetCount').textContent = 0;
-  document.getElementById('zipBtn').style.display  = 'none';
-  document.getElementById('zipBtn2').style.display = 'none';
-}
+function clearList(){CAP=[];UID=0;renderA();['zBtn','zBtn2'].forEach(id=>document.getElementById(id).style.display='none');}
 </script>
 </body>
 </html>
